@@ -4,6 +4,7 @@ import numpy as np
 from skimage.io import imread
 from skimage.draw import polygon as skimg_polygon
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 
 from mmseg_utils.dataset_creation.file_utils import (
     get_files,
@@ -44,6 +45,9 @@ def parse_args():
     parser = ArgumentParser()
     parser.add_argument("--image-folder", default=IMAGE_FOLDER)
     parser.add_argument("--annotation-file", default=ANNOTATION_FILE)
+    parser.add_argument("--output-folder")
+    parser.add_argument("--train-frac", type=float, default=0.8)
+    parser.add_argument("--write-unannotated", action="store_true")
     args = parser.parse_args()
     return args
 
@@ -67,18 +71,46 @@ def create_label_image(image_path, annotation_df, create_vis_image=False):
     return img, label_img, vis_img
 
 
-def main(image_folder, annotation_file):
-    image_paths = Path(image_folder).glob("*.png")
-    annotation_df = pd.read_csv(annotation_file, sep=",", names=COLUMN_NAMES,)
+def main(
+    image_folder,
+    annotation_file,
+    output_folder,
+    train_frac,
+    skip_unannotated=True,
+    seed=0,
+):
+    image_paths = list(Path(image_folder).glob("*.png"))
+    annotation_df = pd.read_csv(annotation_file, sep=",", names=COLUMN_NAMES)
 
-    for image_path in image_paths:
-        img, label_img, vis_img = create_label_image(
+    num_total = len(image_paths)
+    num_train = int(train_frac * num_total)
+    is_train_array = get_is_train_array(num_total, num_train, seed=seed)
+    index = 0
+    for i, image_path in enumerate(tqdm(image_paths)):
+        # Determine whether to use for training
+        is_train = is_train_array[i]
+
+        # Read the data and create label image
+        img, label_img, _ = create_label_image(
             image_path, annotation_df, create_vis_image=True
         )
-        plt.imshow(label_img)
-        plt.show()
+        if skip_unannotated and np.all(label_img == 0):
+            continue
+        write_cityscapes_file(
+            img, output_folder, index, is_ann=False, is_train=is_train
+        )
+        write_cityscapes_file(
+            label_img, output_folder, index, is_ann=True, is_train=is_train
+        )
+        index += 1
 
 
 if __name__ == "__main__":
     args = parse_args()
-    main(args.image_folder, args.annotation_file)
+    main(
+        args.image_folder,
+        args.annotation_file,
+        args.output_folder,
+        args.train_frac,
+        skip_unannotated=not args.write_unannotated,
+    )
