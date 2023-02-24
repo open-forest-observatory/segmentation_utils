@@ -17,13 +17,29 @@ from argparse import ArgumentParser
 ANNOTATION_FILE = "/home/frc-ag-1/Downloads/oporto_2021_12_17_collect_1 (1).csv"
 IMAGE_FOLDER = "/media/frc-ag-1/Elements/data/Safeforest_CMU_data_dvc/data/site_Oporto_clearing/2021_12_17/collect_1/processed_1/images/mapping_left"
 
-CLASS_MAP = {"background": 1, "fuel": 2, "trunks": 3, "canopy": 4}
-COLOR_MAP = {
-    "background": (0, 0, 0),
-    "fuel": (255, 0, 0),
-    "trunks": (255, 0, 255),
-    "canopy": (0, 255, 0),
+CLASS_MAP = {
+    "Dry Grass": 1,
+    "Green Grass": 2,
+    "Dry Shrubs": 3,
+    "Green Shrubs": 4,
+    "Canopy": 5,
+    "Wood Pieces": 6,
+    "Litterfall": 7,
+    "Timber Litter": 8,
+    "Live Trunks": 9,
+    "Bare Earth": 10,
+    "People": 11,
+    "Sky": 12,
+    "Blurry": 13,
+    "Obstacles": 14,
+    "Obstacles ": 14,
 }
+# COLOR_MAP = {
+#    "background": (0, 0, 0),
+#    "fuel": (255, 0, 0),
+#    "trunks": (255, 0, 255),
+#    "canopy": (0, 255, 0),
+# }
 
 COLUMN_NAMES = (
     "column_ID",
@@ -45,7 +61,7 @@ def parse_args():
     parser = ArgumentParser()
     parser.add_argument("--image-folder", default=IMAGE_FOLDER)
     parser.add_argument("--annotation-file", default=ANNOTATION_FILE)
-    parser.add_argument("--output-folder")
+    parser.add_argument("--output-folder", required=True)
     parser.add_argument("--train-frac", type=float, default=0.8)
     parser.add_argument("--write-unannotated", action="store_true")
     args = parser.parse_args()
@@ -92,7 +108,7 @@ def main(
 
         # Read the data and create label image
         img, label_img, _ = create_label_image(
-            image_path, annotation_df, create_vis_image=True
+            image_path, annotation_df, create_vis_image=False
         )
         if skip_unannotated and np.all(label_img == 0):
             continue
