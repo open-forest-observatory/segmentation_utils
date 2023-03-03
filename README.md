@@ -21,6 +21,8 @@ Once you've obtained the data you can upload it to the platform of your choice f
 
 Download the data from VIAME using the CSV export functionality. Now run `python dev/dataset_creation/viame_to_cityscapes.py --image-folder <image folder> --annotation-file <annotation file> --output-folder <output folder>`.
 
+You can visualize this dataset using `dev/visualization/visualize_semantic_labels.py --image-dir <one of the image folders> --seg-dir <the corresponding segmentation annotations> --output-dir <where you want to save the data>`.
+
 Now compute the mean and standard diviation of your dataset using `python dev/dataset_creation/compute_summary_statistics.py --image-dir <image dir>`
 
 Create a copy of the `configs/_base_/datasets/safeforest_2023.py` config. Update the path to your dataset using the `<output folder>` provided to `viame_to_cityscapes.py` and the mean and std computed by `compute_summary_statistics.py`
