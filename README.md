@@ -23,6 +23,6 @@ Download the data from VIAME using the CSV export functionality. Now run `python
 
 Now compute the mean and standard diviation of your dataset using `python dev/dataset_creation/compute_summary_statistics.py --image-dir <image dir>`
 
-Create a copy of the `configs/\_base\_/datasets/safeforest_2023.py` config. Update the path to your dataset using the `<output folder>` provided to `viame_to_cityscapes.py` and the mean and std computed by `compute_summary_statistics.py`
+Create a copy of the `configs/_base_/datasets/safeforest_2023.py` config. Update the path to your dataset using the `<output folder>` provided to `viame_to_cityscapes.py` and the mean and std computed by `compute_summary_statistics.py`
 
 Now you can train using this config in mmsegmentation.

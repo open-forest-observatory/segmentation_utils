@@ -68,6 +68,14 @@ def parse_args():
     return args
 
 
+def clip_locs_to_img(rr, cc, img_shape):
+    # TODO make sure this order is correct
+    valid_rr = np.logical_and(rr >= 0, rr < img_shape[1])
+    valid_cc = np.logical_and(cc >= 0, cc < img_shape[0])
+    valid = np.logical_and(valid_cc, valid_rr)
+    return rr[valid], cc[valid]
+
+
 def create_label_image(image_path, annotation_df, create_vis_image=False):
     image_file = image_path.parts[-1]
     matching_rows = annotation_df.loc[annotation_df["image_name"] == image_file]
@@ -79,6 +87,7 @@ def create_label_image(image_path, annotation_df, create_vis_image=False):
         polygon = np.reshape(polygon, (int(polygon.shape[0] / 2), 2))
 
         rr, cc = skimg_polygon(polygon[:, 0], polygon[:, 1])
+        rr, cc = clip_locs_to_img(rr, cc, label_img.shape[:2])
         class_name = row["class"]
         label_img[cc, rr] = CLASS_MAP[class_name]
 
@@ -112,6 +121,7 @@ def main(
         )
         if skip_unannotated and np.all(label_img == 0):
             continue
+
         write_cityscapes_file(
             img, output_folder, index, is_ann=False, is_train=is_train
         )
