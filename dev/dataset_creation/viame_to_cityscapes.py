@@ -31,8 +31,9 @@ CLASS_MAP = {
     "People": 11,
     "Sky": 12,
     "Blurry": 13,
+    "Obstacle": 14,
     "Obstacles": 14,
-    "Obstacles ": 14,
+    "Drone": 15,
 }
 # COLOR_MAP = {
 #    "background": (0, 0, 0),
@@ -83,7 +84,10 @@ def create_label_image(image_path, annotation_df, create_vis_image=False):
     vis_img = img.copy()
     label_img = np.zeros(img.shape[:2], dtype=np.uint8)
     for _, row in matching_rows.iterrows():
-        polygon = np.array(row["polygon"][7:].split(" ")).astype(int)
+        try:
+            polygon = np.array(row["polygon"][7:].split(" ")).astype(int)
+        except TypeError:
+            continue
         polygon = np.reshape(polygon, (int(polygon.shape[0] / 2), 2))
 
         rr, cc = skimg_polygon(polygon[:, 0], polygon[:, 1])
