@@ -18,23 +18,31 @@ ANNOTATION_FILE = "/home/frc-ag-1/Downloads/oporto_2021_12_17_collect_1 (1).csv"
 IMAGE_FOLDER = "/media/frc-ag-1/Elements/data/Safeforest_CMU_data_dvc/data/site_Oporto_clearing/2021_12_17/collect_1/processed_1/images/mapping_left"
 
 CLASS_MAP = {
-    "Dry Grass": 1,
-    "Green Grass": 2,
-    "Dry Shrubs": 3,
-    "Green Shrubs": 4,
-    "Canopy": 5,
-    "Wood Pieces": 6,
-    "Litterfall": 7,
-    "Timber Litter": 8,
-    "Live Trunks": 9,
-    "Bare Earth": 10,
-    "People": 11,
-    "Sky": 12,
-    "Blurry": 13,
-    "Obstacle": 14,
-    "Obstacles": 14,
-    "Drone": 15,
+    "Fuel": 0,
+    "Canopy": 1,
+    "Background": 2,
+    "Trunks": 3,
+    "unknown": 2, 
 }
+
+# CLASS_MAP = {
+#     "Dry Grass": 1,
+#     "Green Grass": 2,
+#     "Dry Shrubs": 3,
+#     "Green Shrubs": 4,
+#     "Canopy": 5,
+#     "Wood Pieces": 6,
+#     "Litterfall": 7,
+#     "Timber Litter": 8,
+#     "Live Trunks": 9,
+#     "Bare Earth": 10,
+#     "People": 11,
+#     "Sky": 12,
+#     "Blurry": 13,
+#     "Obstacle": 14,
+#     "Obstacles": 14,
+#     "Drone": 15,
+# }
 # COLOR_MAP = {
 #    "background": (0, 0, 0),
 #    "fuel": (255, 0, 0),
@@ -77,12 +85,12 @@ def clip_locs_to_img(rr, cc, img_shape):
     return rr[valid], cc[valid]
 
 
-def create_label_image(image_path, annotation_df, create_vis_image=False):
+def create_label_image(image_path, annotation_df, create_vis_image=False, ignore_index=255):
     image_file = image_path.parts[-1]
     matching_rows = annotation_df.loc[annotation_df["image_name"] == image_file]
     img = imread(image_path)
     vis_img = img.copy()
-    label_img = np.zeros(img.shape[:2], dtype=np.uint8)
+    label_img = np.ones(img.shape[:2], dtype=np.uint8) * ignore_index
     for _, row in matching_rows.iterrows():
         try:
             polygon = np.array(row["polygon"][7:].split(" ")).astype(int)
@@ -107,8 +115,9 @@ def main(
     train_frac,
     skip_unannotated=True,
     seed=0,
+    ignore_index=255,
 ):
-    image_paths = list(Path(image_folder).glob("*.png"))
+    image_paths = list(Path(image_folder).glob("*.jpg"))
     annotation_df = pd.read_csv(annotation_file, sep=",", names=COLUMN_NAMES)
 
     num_total = len(image_paths)
@@ -121,9 +130,9 @@ def main(
 
         # Read the data and create label image
         img, label_img, _ = create_label_image(
-            image_path, annotation_df, create_vis_image=False
+            image_path, annotation_df, create_vis_image=False, ignore_index=ignore_index,
         )
-        if skip_unannotated and np.all(label_img == 0):
+        if skip_unannotated and np.all(label_img == ignore_index):
             continue
 
         write_cityscapes_file(
