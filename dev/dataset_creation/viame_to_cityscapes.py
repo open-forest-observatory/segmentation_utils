@@ -17,38 +17,33 @@ from argparse import ArgumentParser
 ANNOTATION_FILE = "/home/frc-ag-1/Downloads/oporto_2021_12_17_collect_1 (1).csv"
 IMAGE_FOLDER = "/media/frc-ag-1/Elements/data/Safeforest_CMU_data_dvc/data/site_Oporto_clearing/2021_12_17/collect_1/processed_1/images/mapping_left"
 
-CLASS_MAP = {
+BASIC_CLASS_MAP = {
     "Fuel": 0,
     "Canopy": 1,
     "Background": 2,
     "Trunks": 3,
-    "unknown": 2, 
+    "unknown": 2,
 }
 
-# CLASS_MAP = {
-#     "Dry Grass": 1,
-#     "Green Grass": 2,
-#     "Dry Shrubs": 3,
-#     "Green Shrubs": 4,
-#     "Canopy": 5,
-#     "Wood Pieces": 6,
-#     "Litterfall": 7,
-#     "Timber Litter": 8,
-#     "Live Trunks": 9,
-#     "Bare Earth": 10,
-#     "People": 11,
-#     "Sky": 12,
-#     "Blurry": 13,
-#     "Obstacle": 14,
-#     "Obstacles": 14,
-#     "Drone": 15,
-# }
-# COLOR_MAP = {
-#    "background": (0, 0, 0),
-#    "fuel": (255, 0, 0),
-#    "trunks": (255, 0, 255),
-#    "canopy": (0, 255, 0),
-# }
+SAFEFOREST_23_CLASS_MAP = {
+    "Dry Grass": 1,
+    "Green Grass": 2,
+    "Dry Shrubs": 3,
+    "Green Shrubs": 4,
+    "Canopy": 5,
+    "Wood Pieces": 6,
+    "Litterfall": 7,
+    "Timber Litter": 8,
+    "Live Trunks": 9,
+    "Bare Earth": 10,
+    "People": 11,
+    "Sky": 12,
+    "Blurry": 13,
+    "Obstacle": 14,
+    "Obstacles": 14,
+    "Drone": 15,
+}
+ALL_CLASS_MAPS = {"basic": BASIC_CLASS_MAP, "safeforest23": SAFEFOREST_23_CLASS_MAP}
 
 COLUMN_NAMES = (
     "column_ID",
@@ -72,6 +67,10 @@ def parse_args():
     parser.add_argument("--annotation-file", default=ANNOTATION_FILE)
     parser.add_argument("--output-folder", required=True)
     parser.add_argument("--train-frac", type=float, default=0.8)
+    parser.add_argument("--image-extension", default="jpg")
+    parser.add_argument(
+        "--class-map", options=ALL_CLASS_MAPS.keys(), default="safeforest23"
+    )
     parser.add_argument("--write-unannotated", action="store_true")
     args = parser.parse_args()
     return args
@@ -85,7 +84,9 @@ def clip_locs_to_img(rr, cc, img_shape):
     return rr[valid], cc[valid]
 
 
-def create_label_image(image_path, annotation_df, create_vis_image=False, ignore_index=255):
+def create_label_image(
+    image_path, annotation_df, class_map, create_vis_image=False, ignore_index=255
+):
     image_file = image_path.parts[-1]
     matching_rows = annotation_df.loc[annotation_df["image_name"] == image_file]
     img = imread(image_path)
@@ -101,10 +102,10 @@ def create_label_image(image_path, annotation_df, create_vis_image=False, ignore
         rr, cc = skimg_polygon(polygon[:, 0], polygon[:, 1])
         rr, cc = clip_locs_to_img(rr, cc, label_img.shape[:2])
         class_name = row["class"]
-        label_img[cc, rr] = CLASS_MAP[class_name]
+        label_img[cc, rr] = class_map[class_name]
 
         if create_vis_image:
-            vis_img[cc, rr] = COLOR_MAP[class_name]
+            vis_img[cc, rr] = color_map[class_name]
     return img, label_img, vis_img
 
 
@@ -114,10 +115,12 @@ def main(
     output_folder,
     train_frac,
     skip_unannotated=True,
+    image_extension="jpg",
+    class_map=None,
     seed=0,
     ignore_index=255,
 ):
-    image_paths = list(Path(image_folder).glob("*.jpg"))
+    image_paths = list(Path(image_folder).glob("*." + image_extension))
     annotation_df = pd.read_csv(annotation_file, sep=",", names=COLUMN_NAMES)
 
     num_total = len(image_paths)
@@ -130,7 +133,11 @@ def main(
 
         # Read the data and create label image
         img, label_img, _ = create_label_image(
-            image_path, annotation_df, create_vis_image=False, ignore_index=ignore_index,
+            image_path,
+            annotation_df,
+            class_map=class_map,
+            create_vis_image=False,
+            ignore_index=ignore_index,
         )
         if skip_unannotated and np.all(label_img == ignore_index):
             continue
@@ -151,5 +158,7 @@ if __name__ == "__main__":
         args.annotation_file,
         args.output_folder,
         args.train_frac,
+        image_extension=args.image_extension,
+        class_map=ALL_CLASS_MAPS[args.class_map],
         skip_unannotated=not args.write_unannotated,
     )
