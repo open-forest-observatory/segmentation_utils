@@ -14,7 +14,7 @@ def parse_args():
     return args
 
 
-def main(images, num_files,extension="*.png"):
+def main(images, num_files, extension="*.png"):
     files = list(Path(images).glob(extension))
 
     files = choice(files, min(num_files, len(files)))
@@ -29,4 +29,3 @@ def main(images, num_files,extension="*.png"):
 if __name__ == "__main__":
     args = parse_args()
     main(args.images_dir, args.num_files)
-

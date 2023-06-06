@@ -2,8 +2,7 @@ import numpy as np
 
 
 def get_is_train_array(num_total: int, num_train: int, *, seed=None, shift: int = 0):
-    """
-    """
+    """ """
     if seed is not None:
         print(f"Warning: setting numpy random seed to {seed}")
         np.random.seed(seed)

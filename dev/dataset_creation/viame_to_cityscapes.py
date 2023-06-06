@@ -5,6 +5,10 @@ from skimage.io import imread
 from skimage.draw import polygon as skimg_polygon
 import matplotlib.pyplot as plt
 from tqdm import tqdm
+import os
+import shutil
+from mmseg_utils.visualization.visualize_classes import visualize
+
 
 from mmseg_utils.dataset_creation.file_utils import (
     get_files,
@@ -16,6 +20,8 @@ from argparse import ArgumentParser
 
 ANNOTATION_FILE = "/home/frc-ag-1/Downloads/oporto_2021_12_17_collect_1 (1).csv"
 IMAGE_FOLDER = "/media/frc-ag-1/Elements/data/Safeforest_CMU_data_dvc/data/site_Oporto_clearing/2021_12_17/collect_1/processed_1/images/mapping_left"
+
+IGNORE_INDEX = 255
 
 BASIC_CLASS_MAP = {
     "Fuel": 0,
@@ -43,7 +49,32 @@ SAFEFOREST_23_CLASS_MAP = {
     "Obstacles": 14,
     "Drone": 15,
 }
-ALL_CLASS_MAPS = {"basic": BASIC_CLASS_MAP, "safeforest23": SAFEFOREST_23_CLASS_MAP}
+
+SAFEFOREST_CONDENSED_23_CLASS_MAP = {
+    "Dry Grass": 0,
+    "Green Grass": 0,
+    "Dry Shrubs": 0,
+    "Green Shrubs": 1,
+    "Canopy": 1,
+    "Wood Pieces": 0,
+    "Litterfall": 0,
+    "Timber Litter": 0,
+    "Live Trunks": 3,
+    "Bare Earth": 2,
+    "People": 2,
+    "Sky": 2,
+    "Blurry": 2,
+    "Obstacle": 2,
+    "Obstacles": 2,
+    "Drone": 2,
+    "unknown": IGNORE_INDEX,
+}
+
+ALL_CLASS_MAPS = {
+    "basic": BASIC_CLASS_MAP,
+    "safeforest23": SAFEFOREST_23_CLASS_MAP,
+    "safeforest23_condensed": SAFEFOREST_CONDENSED_23_CLASS_MAP,
+}
 
 COLUMN_NAMES = (
     "column_ID",
@@ -69,7 +100,7 @@ def parse_args():
     parser.add_argument("--train-frac", type=float, default=0.8)
     parser.add_argument("--image-extension", default="jpg")
     parser.add_argument(
-        "--class-map", options=ALL_CLASS_MAPS.keys(), default="safeforest23"
+        "--class-map", choices=ALL_CLASS_MAPS.keys(), default="safeforest23"
     )
     parser.add_argument("--write-unannotated", action="store_true")
     args = parser.parse_args()
@@ -85,7 +116,11 @@ def clip_locs_to_img(rr, cc, img_shape):
 
 
 def create_label_image(
-    image_path, annotation_df, class_map, create_vis_image=False, ignore_index=255
+    image_path,
+    annotation_df,
+    class_map,
+    create_vis_image=False,
+    ignore_index=IGNORE_INDEX,
 ):
     image_file = image_path.parts[-1]
     matching_rows = annotation_df.loc[annotation_df["image_name"] == image_file]
@@ -118,7 +153,7 @@ def main(
     image_extension="jpg",
     class_map=None,
     seed=0,
-    ignore_index=255,
+    ignore_index=IGNORE_INDEX,
 ):
     image_paths = list(Path(image_folder).glob("*." + image_extension))
     annotation_df = pd.read_csv(annotation_file, sep=",", names=COLUMN_NAMES)
@@ -149,6 +184,14 @@ def main(
             label_img, output_folder, index, is_ann=True, is_train=is_train
         )
         index += 1
+    shutil.copyfile(annotation_file, Path(output_folder, Path(annotation_file).name))
+
+    visualize(
+        seg_dir=Path(output_folder, "ann_dir", "train"),
+        image_dir=Path(output_folder, "img_dir", "train"),
+        output_dir=Path(output_folder, "train_vis"),
+        palette_name="safeforest23",
+    )
 
 
 if __name__ == "__main__":
