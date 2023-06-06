@@ -7,7 +7,8 @@ ANN_DIR = "ann_dir"
 TRAIN_DIR = "train"
 VAL_DIR = "val"
 
-# TODO update this to the real VIAME labels
+IGNORE_INDEX = 255
+
 SAFEFOREST_23_PALETTE = np.array(
     [
         [128, 224, 255],  # Dry Grass
@@ -24,37 +25,24 @@ SAFEFOREST_23_PALETTE = np.array(
         [167, 128, 255],  # Sky
         [134, 45, 83],  # Blurry
         [45, 68, 134],
-    ]  # Obstacles
+    ]
 )
 
 SAFEFOREST_23_CONDENSED_PALETTE = np.array(
     [
-        [128, 224, 255],  # Dry Grass
-        [0, 255, 255],  # Green Grass (canopy)
-        [80, 0, 255],  # Dry Shrubs
-        [45, 112, 134],  # Green Shrubs
-        [0, 255, 144],  # Canopy
-        [128, 255, 199],  # Wood Pieces
-        [224, 0, 255],  # Litterfall (bare earth or fuel)
-        [0, 194, 255],  # Timber Litter
-        [45, 134, 95],  # Live Trunks
-        [255, 0, 111],  # Bare Earth
-        [239, 128, 255],  # People
-        [167, 128, 255],  # Sky
-        [134, 45, 83],  # Blurry
-        [45, 68, 134],
-    ]  # Obstacles
+        [255, 0, 0],  # Fuel
+        [0, 255, 0],  # Canopy
+        [0, 0, 0],  # Background
+        [255, 0, 255],  # Trunks
+    ]
 )
-PALETTE_MAP = {"safeforest_23": SAFEFOREST_23_PALETTE}
-
-IGNORE_INDEX = 255
 
 BASIC_CLASS_MAP = {
     "Fuel": 0,
     "Canopy": 1,
     "Background": 2,
     "Trunks": 3,
-    "unknown": 2,
+    "unknown": IGNORE_INDEX,
 }
 
 SAFEFOREST_23_CLASS_MAP = {
@@ -74,6 +62,7 @@ SAFEFOREST_23_CLASS_MAP = {
     "Obstacle": 13,
     "Obstacles": 13,
     "Drone": 14,
+    "unknown": IGNORE_INDEX,
 }
 
 SAFEFOREST_CONDENSED_23_CLASS_MAP = {
@@ -96,13 +85,6 @@ SAFEFOREST_CONDENSED_23_CLASS_MAP = {
     "unknown": IGNORE_INDEX,
 }
 
-
-ALL_CLASS_MAPS = {
-    "basic": BASIC_CLASS_MAP,
-    "safeforest23": SAFEFOREST_23_CLASS_MAP,
-    "safeforest23_condensed": SAFEFOREST_CONDENSED_23_CLASS_MAP,
-}
-
 COLUMN_NAMES = (
     "column_ID",
     "image_name",
@@ -117,3 +99,14 @@ COLUMN_NAMES = (
     "class_confidence",
     "polygon",
 )
+
+CLASS_MAP = {
+    "basic": BASIC_CLASS_MAP,
+    "safeforest23": SAFEFOREST_23_CLASS_MAP,
+    "safeforest23_condensed": SAFEFOREST_CONDENSED_23_CLASS_MAP,
+}
+PALETTE_MAP = {
+    "basic": SAFEFOREST_23_CONDENSED_PALETTE,
+    "safeforest23": SAFEFOREST_23_PALETTE,
+    "safeforest23_condensed": SAFEFOREST_23_CONDENSED_PALETTE,
+}

@@ -15,81 +15,12 @@ from mmseg_utils.dataset_creation.file_utils import (
     link_cityscapes_file,
     write_cityscapes_file,
 )
+from mmseg_utils.config import CLASS_MAP, IGNORE_INDEX, PALETTE_MAP
 from mmseg_utils.dataset_creation.split_utils import get_is_train_array
 from argparse import ArgumentParser
 
 ANNOTATION_FILE = "/home/frc-ag-1/Downloads/oporto_2021_12_17_collect_1 (1).csv"
 IMAGE_FOLDER = "/media/frc-ag-1/Elements/data/Safeforest_CMU_data_dvc/data/site_Oporto_clearing/2021_12_17/collect_1/processed_1/images/mapping_left"
-
-IGNORE_INDEX = 255
-
-BASIC_CLASS_MAP = {
-    "Fuel": 0,
-    "Canopy": 1,
-    "Background": 2,
-    "Trunks": 3,
-    "unknown": 2,
-}
-
-SAFEFOREST_23_CLASS_MAP = {
-    "Dry Grass": 1,
-    "Green Grass": 2,
-    "Dry Shrubs": 3,
-    "Green Shrubs": 4,
-    "Canopy": 5,
-    "Wood Pieces": 6,
-    "Litterfall": 7,
-    "Timber Litter": 8,
-    "Live Trunks": 9,
-    "Bare Earth": 10,
-    "People": 11,
-    "Sky": 12,
-    "Blurry": 13,
-    "Obstacle": 14,
-    "Obstacles": 14,
-    "Drone": 15,
-}
-
-SAFEFOREST_CONDENSED_23_CLASS_MAP = {
-    "Dry Grass": 0,
-    "Green Grass": 0,
-    "Dry Shrubs": 0,
-    "Green Shrubs": 1,
-    "Canopy": 1,
-    "Wood Pieces": 0,
-    "Litterfall": 0,
-    "Timber Litter": 0,
-    "Live Trunks": 3,
-    "Bare Earth": 2,
-    "People": 2,
-    "Sky": 2,
-    "Blurry": 2,
-    "Obstacle": 2,
-    "Obstacles": 2,
-    "Drone": 2,
-    "unknown": IGNORE_INDEX,
-}
-
-ALL_CLASS_MAPS = {
-    "basic": BASIC_CLASS_MAP,
-    "safeforest23": SAFEFOREST_23_CLASS_MAP,
-    "safeforest23_condensed": SAFEFOREST_CONDENSED_23_CLASS_MAP,
-}
-
-COLUMN_NAMES = (
-    "column_ID",
-    "image_name",
-    "frame_ID",
-    "bbox_tl_x",
-    "bbox_tl_y",
-    "bbox_br_x",
-    "bbox_br_y",
-    "det_or_len_confidence",
-    "length",
-    "class",
-    "class_confidence",
-    "polygon",
-)
 
 
 def parse_args():
@@ -99,9 +30,7 @@ def parse_args():
     parser.add_argument("--output-folder", required=True)
     parser.add_argument("--train-frac", type=float, default=0.8)
     parser.add_argument("--image-extension", default="jpg")
-    parser.add_argument(
-        "--class-map", choices=ALL_CLASS_MAPS.keys(), default="safeforest23"
-    )
+    parser.add_argument("--class-map", choices=CLASS_MAP.keys(), default="safeforest23")
     parser.add_argument("--write-unannotated", action="store_true")
     args = parser.parse_args()
     return args
@@ -115,17 +44,10 @@ def clip_locs_to_img(rr, cc, img_shape):
     return rr[valid], cc[valid]
 
 
-def create_label_image(
-    image_path,
-    annotation_df,
-    class_map,
-    create_vis_image=False,
-    ignore_index=IGNORE_INDEX,
-):
+def create_label_image(image_path, annotation_df, class_map, ignore_index=IGNORE_INDEX):
     image_file = image_path.parts[-1]
     matching_rows = annotation_df.loc[annotation_df["image_name"] == image_file]
     img = imread(image_path)
-    vis_img = img.copy()
     label_img = np.ones(img.shape[:2], dtype=np.uint8) * ignore_index
     for _, row in matching_rows.iterrows():
         try:
@@ -139,9 +61,7 @@ def create_label_image(
         class_name = row["class"]
         label_img[cc, rr] = class_map[class_name]
 
-        if create_vis_image:
-            vis_img[cc, rr] = color_map[class_name]
-    return img, label_img, vis_img
+    return img, label_img
 
 
 def main(
@@ -167,7 +87,7 @@ def main(
         is_train = is_train_array[i]
 
         # Read the data and create label image
-        img, label_img, _ = create_label_image(
+        img, label_img = create_label_image(
             image_path,
             annotation_df,
             class_map=class_map,
@@ -202,6 +122,6 @@ if __name__ == "__main__":
         args.output_folder,
         args.train_frac,
         image_extension=args.image_extension,
-        class_map=ALL_CLASS_MAPS[args.class_map],
+        class_map=CLASS_MAP[args.class_map],
         skip_unannotated=not args.write_unannotated,
     )
