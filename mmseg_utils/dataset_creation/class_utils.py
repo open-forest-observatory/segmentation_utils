@@ -17,7 +17,7 @@ def combine_classes(first_image, second_image, remap):
 
 
 def remap_classes_bool_indexing(
-    input_classes: np.array, remap: np.array, background_value: int = 7
+    input_classes: np.array, remap: np.array, background_value: int = 255
 ):
     """Change indices based on input
 

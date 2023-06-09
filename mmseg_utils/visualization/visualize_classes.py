@@ -17,11 +17,13 @@ def visualize_with_palette(index_image, palette, ignore_ind=255):
     palette : np.ndarray
         The colors for each index. (N classes,3)
     """
+    # Flip pallete bc these are BGR
+    palette = np.flip(palette, axis=1)
     h, w = index_image.shape
     index_image = index_image.flatten()
 
     dont_ignore = index_image != ignore_ind
-    output = np.zeros((index_image.shape[0], 3))
+    output = np.ones((index_image.shape[0], 3)) * 255
     colored_image = palette[index_image[dont_ignore]]
     output[dont_ignore] = colored_image
     colored_image = np.reshape(output, (h, w, 3))
@@ -32,18 +34,29 @@ def blend_images(im1, im2, alpha=0.7):
     return (alpha * im1 + (1 - alpha) * im2).astype(np.uint8)
 
 
-def show_colormaps(seg_map, num_classes=7):
-    square_size = int(np.ceil(np.sqrt(num_classes)))
-    vis = np.zeros((square_size, square_size, 3))
+def show_colormaps(seg_map, class_names, savepath=None):
+    num_classes = len(class_names)
+    n_squares = int(np.ceil(np.sqrt(num_classes)))
+    fig, axs = plt.subplots(n_squares, n_squares)
+
     for index in range(num_classes):
-        i = index // square_size
-        j = index % square_size
-        vis[i, j] = seg_map[index]
-    vis = vis.astype(np.uint8)
-    vis = np.repeat(np.repeat(vis, repeats=100, axis=0), repeats=100, axis=1)
-    plt.imshow(vis)
-    plt.show()
-    breakpoint()
+        i = index // n_squares
+        j = index % n_squares
+
+        color = seg_map[index]
+        color = np.expand_dims(color, (0, 1))
+        vis_square = np.repeat(
+            np.repeat(color, repeats=100, axis=0), repeats=100, axis=1
+        )
+        axs[i, j].imshow(vis_square)
+        axs[i, j].set_title(class_names[index])
+        axs[i, j].axis("off")
+    plt.axis("off")
+    if savepath is None:
+        plt.show()
+    else:
+        plt.savefig(savepath)
+        plt.close()
 
 
 def load_png_npy(filename):
@@ -69,7 +82,7 @@ def visualize(seg_dir, image_dir, output_dir, palette_name="rui", alpha=0.5, str
         list(zip(seg_files, image_files))[::stride], total=len(seg_files[::stride])
     ):
         seg = load_png_npy(seg_file)
-        img = imread(image_file)
+        img = np.flip(imread(image_file), axis=2)
 
         vis_seg = visualize_with_palette(seg, palette)
         blended = blend_images_gray(img, vis_seg, alpha)

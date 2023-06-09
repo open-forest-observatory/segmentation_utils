@@ -7,15 +7,20 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 import os
 import shutil
-from mmseg_utils.visualization.visualize_classes import visualize
+from mmseg_utils.visualization.visualize_classes import visualize, show_colormaps
+from mmseg_utils.dataset_creation.summary_statistics import compute_summary_statistics
 
 
 from mmseg_utils.dataset_creation.file_utils import (
-    get_files,
-    link_cityscapes_file,
     write_cityscapes_file,
 )
-from mmseg_utils.config import CLASS_MAP, IGNORE_INDEX, PALETTE_MAP
+from mmseg_utils.config import (
+    CLASS_MAP,
+    IGNORE_INDEX,
+    COLUMN_NAMES,
+    PALETTE_MAP,
+    CLASS_NAMES,
+)
 from mmseg_utils.dataset_creation.split_utils import get_is_train_array
 from argparse import ArgumentParser
 
@@ -30,7 +35,9 @@ def parse_args():
     parser.add_argument("--output-folder", required=True)
     parser.add_argument("--train-frac", type=float, default=0.8)
     parser.add_argument("--image-extension", default="jpg")
-    parser.add_argument("--class-map", choices=CLASS_MAP.keys(), default="safeforest23")
+    parser.add_argument(
+        "--dataset-identifier", choices=CLASS_MAP.keys(), default="safeforest23"
+    )
     parser.add_argument("--write-unannotated", action="store_true")
     args = parser.parse_args()
     return args
@@ -70,11 +77,24 @@ def main(
     output_folder,
     train_frac,
     skip_unannotated=True,
+    dataset_identifier="",
     image_extension="jpg",
-    class_map=None,
     seed=0,
     ignore_index=IGNORE_INDEX,
 ):
+    output_folder = Path(output_folder, dataset_identifier)
+    output_train_img_dir = Path(output_folder, "img_dir", "train")
+    output_train_ann_dir = Path(output_folder, "ann_dir", "train")
+
+    os.makedirs(output_folder, exist_ok=True)
+    class_map = CLASS_MAP[dataset_identifier]
+
+    show_colormaps(
+        PALETTE_MAP[dataset_identifier],
+        CLASS_NAMES[dataset_identifier],
+        savepath=Path(output_folder, "class_color_vis.png"),
+    )
+
     image_paths = list(Path(image_folder).glob("*." + image_extension))
     annotation_df = pd.read_csv(annotation_file, sep=",", names=COLUMN_NAMES)
 
@@ -91,7 +111,6 @@ def main(
             image_path,
             annotation_df,
             class_map=class_map,
-            create_vis_image=False,
             ignore_index=ignore_index,
         )
         if skip_unannotated and np.all(label_img == ignore_index):
@@ -110,7 +129,11 @@ def main(
         seg_dir=Path(output_folder, "ann_dir", "train"),
         image_dir=Path(output_folder, "img_dir", "train"),
         output_dir=Path(output_folder, "train_vis"),
-        palette_name="safeforest23",
+        palette_name=dataset_identifier,
+    )
+    compute_summary_statistics(
+        images=output_train_img_dir,
+        savepath=Path(output_folder, "summary_statistics.txt"),
     )
 
 
@@ -122,6 +145,6 @@ if __name__ == "__main__":
         args.output_folder,
         args.train_frac,
         image_extension=args.image_extension,
-        class_map=CLASS_MAP[args.class_map],
+        dataset_identifier=args.dataset_identifier,
         skip_unannotated=not args.write_unannotated,
     )
