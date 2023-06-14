@@ -1,0 +1,10 @@
+python dev/dataset_creation/viame_to_cityscapes.py --image-folder \
+  /ofo-share/repos-david/Safeforest_CMU_data_dvc/data/site_Gascola/04_27_23/collect_05/processed_01/images/left_camera_0.5_brightened_04.0_new \
+  --annotation-file /ofo-share/repos-david/downloads/site_Gascola_23_04_27_collect_05/annotations.viame.csv --output-folder \
+  /ofo-share/repos-david/Safeforest_CMU_data_dvc/data/site_Gascola/04_27_23/collect_05/processed_01/annotations_brightened_4.0 \
+  --dataset-identifier safeforest23 --train-frac 1.0
+
+python dev/dataset_creation/viame_to_cityscapes.py --image-folder /ofo-share/repos-david/Safeforest_CMU_data_dvc/data/site_Gascola/04_27_23/collect_05/processed_01/images/left_camera_0.5_brightened_04.0_new \
+  --annotation-file /ofo-share/repos-david/downloads/site_Gascola_23_04_27_collect_05/annotations.viame.csv \
+  --output-folder /ofo-share/repos-david/Safeforest_CMU_data_dvc/data/site_Gascola/04_27_23/collect_05/processed_01/annotations_brightened_4.0 \
+  --dataset-identifier safeforest23_condensed --train-frac 1.0

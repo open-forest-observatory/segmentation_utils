@@ -9,43 +9,45 @@ VAL_DIR = "val"
 
 IGNORE_INDEX = 255
 
-SAFEFOREST_23_PALETTE = np.array(
-    [
-        [128, 224, 255],  # Dry Grass, 0
-        [0, 255, 255],  # Green Grass (canopy), 1
-        [80, 0, 255],  # Dry Shrubs, 2
-        [45, 112, 134],  # Green Shrubs, 3
-        [0, 255, 144],  # Canopy, 4
-        [128, 255, 199],  # Wood Pieces, 5
-        [224, 0, 255],  # Litterfall (bare earth or fuel), 6
-        [0, 194, 255],  # Timber Litter, 7
-        [45, 134, 95],  # Live Trunks, 8
-        [255, 0, 111],  # Bare Earth, 9
-        [239, 128, 255],  # People, 10
-        [167, 128, 255],  # Sky, 11
-        [134, 45, 83],  # Blurry, 12
-        [83, 45, 134],  # Obstacle
-        [45, 68, 134],  # Drones, 13
-    ]
+SAFEFOREST_23_PALETTE = np.flip(
+    np.array(
+        [
+            [128, 224, 255],  # Dry Grass, 0
+            [0, 255, 255],  # Green Grass (canopy), 1
+            [80, 0, 255],  # Dry Shrubs, 2
+            [45, 112, 134],  # Green Shrubs, 3
+            [0, 255, 144],  # Canopy, 4
+            [128, 255, 199],  # Wood Pieces, 5
+            [224, 0, 255],  # Litterfall (bare earth or fuel), 6
+            [0, 194, 255],  # Timber Litter, 7
+            [45, 134, 95],  # Live Trunks, 8
+            [255, 0, 111],  # Bare Earth, 9
+            [239, 128, 255],  # People, 10
+            [167, 128, 255],  # Sky, 11
+            [134, 45, 83],  # Blurry, 12
+            [83, 45, 134],  # Obstacle
+            [45, 68, 134],  # Drones, 13
+        ]
+    ), axis=1,
 )
 
 SAFEFOREST_23_CONDENSED_PALETTE = np.array(
-    [
-        [255, 0, 0],  # Fuel
-        [0, 255, 0],  # Canopy
-        [0, 0, 0],  # Background
-        [255, 0, 255],  # Trunks
-    ]
-)
+        [
+            [255, 0, 0],  # Fuel
+            [0, 255, 0],  # Canopy
+            [0, 0, 0],  # Background
+            [255, 0, 255],  # Trunks
+        ]
+    )
 
 SAFEFOREST_23_NAMES = [
     "Dry Grass",
-    "Green Grass (canopy)",
+    "Green Grass",
     "Dry Shrubs",
     "Green Shrubs",
     "Canopy",
     "Wood Pieces",
-    "Litterfall (bare earth or fuel)",
+    "Litterfall",
     "Timber Litter",
     "Live Trunks",
     "Bare Earth",
@@ -83,6 +85,7 @@ SAFEFOREST_23_CLASS_MAP = {
     "Obstacle": 13,
     "Obstacles": 13,
     "Drone": 14,
+    "Fuel": IGNORE_INDEX,
     "unknown": IGNORE_INDEX,
 }
 
@@ -104,6 +107,7 @@ SAFEFOREST_CONDENSED_23_CLASS_MAP = {
     "Obstacle": 2,
     "Obstacles": 2,
     "Drone": 2,
+    "Fuel": 0,
     "unknown": IGNORE_INDEX,
 }
 

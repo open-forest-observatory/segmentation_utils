@@ -35,6 +35,7 @@ def parse_args():
     parser.add_argument("--output-folder", required=True)
     parser.add_argument("--train-frac", type=float, default=0.8)
     parser.add_argument("--image-extension", default="jpg")
+    parser.add_argument("--index-shift", type=int, default=0)
     parser.add_argument(
         "--dataset-identifier", choices=CLASS_MAP.keys(), default="safeforest23"
     )
@@ -80,6 +81,7 @@ def main(
     dataset_identifier="",
     image_extension="jpg",
     seed=0,
+    index_shift=0,
     ignore_index=IGNORE_INDEX,
 ):
     output_folder = Path(output_folder, dataset_identifier)
@@ -92,7 +94,7 @@ def main(
     show_colormaps(
         PALETTE_MAP[dataset_identifier],
         CLASS_NAMES[dataset_identifier],
-        savepath=Path(output_folder, "class_color_vis.png"),
+    #    savepath=Path(output_folder, "class_color_vis.png"),
     )
 
     image_paths = list(Path(image_folder).glob("*." + image_extension))
@@ -146,5 +148,6 @@ if __name__ == "__main__":
         args.train_frac,
         image_extension=args.image_extension,
         dataset_identifier=args.dataset_identifier,
+        index_shift=args.index_shift,
         skip_unannotated=not args.write_unannotated,
     )

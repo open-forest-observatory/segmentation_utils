@@ -51,6 +51,12 @@ def show_colormaps(seg_map, class_names, savepath=None):
         axs[i, j].imshow(vis_square)
         axs[i, j].set_title(class_names[index])
         axs[i, j].axis("off")
+    # Clear remaining subplots
+    for index in range(num_classes, n_squares*n_squares):
+        i = index // n_squares
+        j = index % n_squares
+        axs[i, j].axis("off")
+
     plt.axis("off")
     if savepath is None:
         plt.show()
