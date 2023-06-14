@@ -17,8 +17,6 @@ def visualize_with_palette(index_image, palette, ignore_ind=255):
     palette : np.ndarray
         The colors for each index. (N classes,3)
     """
-    # Flip pallete bc these are BGR
-    palette = np.flip(palette, axis=1)
     h, w = index_image.shape
     index_image = index_image.flatten()
 
@@ -95,7 +93,7 @@ def visualize(seg_dir, image_dir, output_dir, palette_name="rui", alpha=0.5, str
 
         concat = np.concatenate((img, vis_seg, blended), axis=0)
         savepath = output_dir.joinpath(image_file.name)
-        imwrite(str(savepath), np.flip(concat, axis=2))
+        imwrite(str(savepath), concat)
 
 
 def blend_images_gray(im1, im2, alpha=0.7):
