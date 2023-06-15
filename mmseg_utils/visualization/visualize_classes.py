@@ -32,6 +32,48 @@ def blend_images(im1, im2, alpha=0.7):
     return (alpha * im1 + (1 - alpha) * im2).astype(np.uint8)
 
 
+def show_frequency_hist(palette, class_names, freqs):
+    plt.bar(
+        np.arange(palette.shape[0]),
+        height=freqs,
+        color=palette / 255.0,
+        tick_label=class_names,
+    )
+    plt.xticks(rotation=45)  # Rotates X-Axis Ticks by 45-degrees
+
+    plt.ylabel("Class fraction")
+    plt.tight_layout()
+    plt.savefig("vis/class_fraction_train.png")
+    plt.show()
+
+
+def show_colormaps_flat(seg_map, class_names, mask=None, savepath=None):
+    if mask is not None:
+        seg_map = seg_map[mask]
+        class_names = np.array(class_names)[mask]
+
+    num_classes = len(class_names)
+    fig, axs = plt.subplots(1, num_classes)
+
+    for index in range(num_classes):
+
+        color = seg_map[index]
+        color = np.expand_dims(color, (0, 1))
+        vis_square = np.repeat(
+            np.repeat(color, repeats=100, axis=0), repeats=100, axis=1
+        )
+        axs[index].imshow(vis_square)
+        axs[index].set_title(class_names[index])
+        axs[index].axis("off")
+
+    plt.axis("off")
+    if savepath is None:
+        plt.show()
+    else:
+        plt.savefig(savepath)
+        plt.close()
+
+
 def show_colormaps(seg_map, class_names, savepath=None):
     num_classes = len(class_names)
     n_squares = int(np.ceil(np.sqrt(num_classes)))
@@ -50,7 +92,7 @@ def show_colormaps(seg_map, class_names, savepath=None):
         axs[i, j].set_title(class_names[index])
         axs[i, j].axis("off")
     # Clear remaining subplots
-    for index in range(num_classes, n_squares*n_squares):
+    for index in range(num_classes, n_squares * n_squares):
         i = index // n_squares
         j = index % n_squares
         axs[i, j].axis("off")
@@ -93,7 +135,9 @@ def visualize(seg_dir, image_dir, output_dir, palette_name="rui", alpha=0.5, str
 
         concat = np.concatenate((img, vis_seg, blended), axis=0)
         savepath = output_dir.joinpath(image_file.name)
-        gt_classes_savepath = output_dir.joinpath(image_file.name.replace(".png", "_vis_seg.png"))
+        gt_classes_savepath = output_dir.joinpath(
+            image_file.name.replace(".png", "_vis_seg.png")
+        )
         imwrite(str(savepath), concat)
         imwrite(str(gt_classes_savepath), vis_seg)
 

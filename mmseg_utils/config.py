@@ -28,17 +28,18 @@ SAFEFOREST_23_PALETTE = np.flip(
             [83, 45, 134],  # Obstacle
             [45, 68, 134],  # Drones, 13
         ]
-    ), axis=1,
+    ),
+    axis=1,
 )
 
 SAFEFOREST_23_CONDENSED_PALETTE = np.array(
-        [
-            [255, 0, 0],  # Fuel
-            [0, 255, 0],  # Canopy
-            [0, 0, 0],  # Background
-            [255, 0, 255],  # Trunks
-        ]
-    )
+    [
+        [255, 0, 0],  # Fuel
+        [0, 255, 0],  # Canopy
+        [0, 0, 0],  # Background
+        [255, 0, 255],  # Trunks
+    ]
+)
 
 SAFEFOREST_23_NAMES = [
     "Dry Grass",
@@ -54,6 +55,7 @@ SAFEFOREST_23_NAMES = [
     "People",
     "Sky",
     "Blurry",
+    "Obstacle",
     "Drone",
 ]
 
