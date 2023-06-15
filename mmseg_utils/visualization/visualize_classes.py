@@ -93,7 +93,9 @@ def visualize(seg_dir, image_dir, output_dir, palette_name="rui", alpha=0.5, str
 
         concat = np.concatenate((img, vis_seg, blended), axis=0)
         savepath = output_dir.joinpath(image_file.name)
+        gt_classes_savepath = output_dir.joinpath(image_file.name.replace(".png", "_vis_seg.png"))
         imwrite(str(savepath), concat)
+        imwrite(str(gt_classes_savepath), vis_seg)
 
 
 def blend_images_gray(im1, im2, alpha=0.7):
