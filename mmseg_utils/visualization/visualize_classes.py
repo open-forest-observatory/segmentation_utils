@@ -32,18 +32,30 @@ def blend_images(im1, im2, alpha=0.7):
     return (alpha * im1 + (1 - alpha) * im2).astype(np.uint8)
 
 
-def show_frequency_hist(palette, class_names, freqs):
+def show_frequency_hist(palette, class_names, freqs, savefig=None):
+    mask = freqs != 0
+    palette = palette[mask]
+    class_names = np.array(class_names)[mask]
+    freqs = freqs[mask]
+
+    order = np.array(list(reversed(np.argsort(freqs).tolist())))
+    palette = palette[order]
+    class_names = class_names[order].tolist()
+    freqs = freqs[order]
+
     plt.bar(
         np.arange(palette.shape[0]),
         height=freqs,
         color=palette / 255.0,
         tick_label=class_names,
     )
-    plt.xticks(rotation=45)  # Rotates X-Axis Ticks by 45-degrees
+    plt.xticks(rotation=45, size=14)  # Rotates X-Axis Ticks by 45-degrees
 
-    plt.ylabel("Class fraction")
+    plt.ylabel("Class fraction", size=14)
+    plt.yticks(size=14)
     plt.tight_layout()
-    plt.savefig("vis/class_fraction_train.png")
+    if savefig is not None:
+        plt.savefig(savefig)
     plt.show()
 
 

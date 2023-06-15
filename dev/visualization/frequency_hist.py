@@ -25,4 +25,29 @@ freq = np.array(
         0.0,
     ]
 )
-show_frequency_hist(palette=palette, class_names=class_names, freqs=freq)
+
+freq_test = np.array(
+    [
+        2.73017106e-01,
+        2.33781544e-03,
+        3.06607209e-04,
+        2.96282623e-02,
+        3.86683891e-01,
+        0.00000000e00,
+        0.00000000e00,
+        0.00000000e00,
+        4.00330552e-05,
+        1.84171402e-01,
+        0.00000000e00,
+        0.00000000e00,
+        0.00000000e00,
+        0.00000000e00,
+        0.00000000e00,
+    ]
+)
+show_frequency_hist(
+    palette=palette,
+    class_names=class_names,
+    freqs=freq_test,
+    savefig="vis/test_freq.png",
+)

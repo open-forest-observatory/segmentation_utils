@@ -52,7 +52,7 @@ for i in range(len(img_files)):
     spacer = np.ones((rgb.shape[0], 50, 3), dtype=np.uint8) * 255
 
     concatenated = np.concatenate(
-        (rgb, spacer, fcp, spacer, fcg, spacer, cp, spacer, cg), axis=1
+        (rgb, spacer, fcg, spacer, fcp, spacer, cg, spacer, cp), axis=1
     )
     output_file = Path(OUTPUT_FOLDER, img_files[i].name)
     imwrite(output_file, concatenated)
