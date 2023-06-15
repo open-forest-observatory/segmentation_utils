@@ -4,7 +4,7 @@ from skimage.io import imsave
 
 
 def convert_colors_to_indices(img: np.ndarray, palette: np.ndarray):
-    """ 
+    """
 
     img: (h, w, 3|4) input image of color masks
     palette: (n, 3) Ordered colors in the colormap
