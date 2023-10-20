@@ -1,5 +1,26 @@
 import numpy as np
-import time
+from tqdm import tqdm
+import os
+from pathlib import Path
+from mmseg_utils.dataset_creation.file_utils import read_npy_or_img
+from imageio import imwrite
+from skimage.transform import resize
+
+
+def remap_folder(input_folder, output_folder, remap, glob="*", output_img_size=None):
+    os.makedirs(output_folder, exist_ok=True)
+    input_files = Path(input_folder).glob(glob)
+    for input_file in tqdm(input_files):
+        input_label = read_npy_or_img(input_file)
+        output_label = remap_classes_bool_indexing(input_label, remap)
+        if output_img_size is not None:
+            output_label = resize(output_label, output_shape=output_img_size, order=0)
+
+        output_file = Path(output_folder, input_file.name)
+        if output_file.suffix == ".npy":
+            output_file = output_file.with_suffix(".png")
+        output_label = output_label.astype(np.uint8)
+        imwrite(output_file, output_label)
 
 
 def combine_classes(first_image, second_image, remap):
@@ -23,7 +44,10 @@ def remap_classes_bool_indexing(
 
     https://stackoverflow.com/questions/3403973/fast-replacement-of-values-in-a-numpy-array
     """
-    output = np.ones_like(input_classes) * background_value
+    if remap is None:
+        return input_classes
+
+    output = np.full_like(input_classes, dtype=np.uint8, fill_value=background_value)
     for i, v in enumerate(remap):
         mask = input_classes == i
         output[mask] = v

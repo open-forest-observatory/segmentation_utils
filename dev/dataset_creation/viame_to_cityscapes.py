@@ -94,7 +94,7 @@ def main(
     show_colormaps(
         PALETTE_MAP[dataset_identifier],
         CLASS_NAMES[dataset_identifier],
-    #    savepath=Path(output_folder, "class_color_vis.png"),
+        #    savepath=Path(output_folder, "class_color_vis.png"),
     )
 
     image_paths = list(Path(image_folder).glob("*." + image_extension))

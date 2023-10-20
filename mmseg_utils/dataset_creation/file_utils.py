@@ -2,6 +2,7 @@ import numpy as np
 import os
 from pathlib import Path
 from ubelt import ensuredir, symlink
+from imageio import imread
 from mmseg_utils.dataset_creation.img_utils import imwrite_skimage
 from mmseg_utils.config import ANN_DIR, IMG_DIR, TRAIN_DIR, VAL_DIR, SEG_EXT, RGB_EXT
 
@@ -78,6 +79,13 @@ def generate_output_file(output_folder, index, is_ann, is_train):
     filename = f"{index:06d}{SEG_EXT if is_ann else RGB_EXT}.png"
     output_filepath = Path(output_sub_folder, filename)
     return output_filepath
+
+
+def read_npy_or_img(filename):
+    filename = Path(filename)
+    if filename.suffix == ".npy":
+        return np.load(filename)
+    return imread(filename)
 
 
 def write_cityscapes_file(

@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 RGB_EXT = "_rgb"
 SEG_EXT = "_segmentation"
@@ -28,17 +29,18 @@ SAFEFOREST_23_PALETTE = np.flip(
             [83, 45, 134],  # Obstacle
             [45, 68, 134],  # Drones, 13
         ]
-    ), axis=1,
+    ),
+    axis=1,
 )
 
 SAFEFOREST_23_CONDENSED_PALETTE = np.array(
-        [
-            [255, 0, 0],  # Fuel
-            [0, 255, 0],  # Canopy
-            [0, 0, 0],  # Background
-            [255, 0, 255],  # Trunks
-        ]
-    )
+    [
+        [255, 0, 0],  # Fuel
+        [0, 255, 0],  # Canopy
+        [0, 0, 0],  # Background
+        [255, 0, 255],  # Trunks
+    ]
+)
 
 SAFEFOREST_23_NAMES = [
     "Dry Grass",
@@ -66,6 +68,18 @@ BASIC_CLASS_MAP = {
     "Trunks": 3,
     "unknown": IGNORE_INDEX,
 }
+
+
+def hex_to_rgb(value):
+    value = value.lstrip("#")
+    lv = len(value)
+    return tuple(int(value[i : i + lv // 3], 16) for i in range(0, lv, lv // 3))
+
+
+MATPLOTLIB_PALLETE = np.array(
+    [hex_to_rgb(x) for x in plt.rcParams["axes.prop_cycle"].by_key()["color"]]
+)
+
 
 SAFEFOREST_23_CLASS_MAP = {
     "Dry Grass": 0,
@@ -138,6 +152,7 @@ CLASS_NAMES = {
 }
 PALETTE_MAP = {
     "basic": SAFEFOREST_23_CONDENSED_PALETTE,
+    "matplotlib": MATPLOTLIB_PALLETE,
     "safeforest23": SAFEFOREST_23_PALETTE,
     "safeforest23_condensed": SAFEFOREST_23_CONDENSED_PALETTE,
 }

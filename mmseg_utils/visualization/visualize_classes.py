@@ -21,7 +21,7 @@ def visualize_with_palette(index_image, palette, ignore_ind=255):
     index_image = index_image.flatten()
 
     dont_ignore = index_image != ignore_ind
-    output = np.ones((index_image.shape[0], 3)) * 255
+    output = np.zeros((index_image.shape[0], 3))
     colored_image = palette[index_image[dont_ignore]]
     output[dont_ignore] = colored_image
     colored_image = np.reshape(output, (h, w, 3))
@@ -50,7 +50,7 @@ def show_colormaps(seg_map, class_names, savepath=None):
         axs[i, j].set_title(class_names[index])
         axs[i, j].axis("off")
     # Clear remaining subplots
-    for index in range(num_classes, n_squares*n_squares):
+    for index in range(num_classes, n_squares * n_squares):
         i = index // n_squares
         j = index % n_squares
         axs[i, j].axis("off")
@@ -66,17 +66,27 @@ def show_colormaps(seg_map, class_names, savepath=None):
 def load_png_npy(filename):
     if filename.suffix == ".npy":
         return np.load(filename)
-    elif filename.suffix in (".png", ".jpg", ".jpeg"):
+    elif filename.suffix in (".png", ".jpg", ".jpeg", ".JPG"):
         return imread(filename)
 
 
-def visualize(seg_dir, image_dir, output_dir, palette_name="rui", alpha=0.5, stride=1):
+def visualize(
+    seg_dir,
+    image_dir,
+    output_dir,
+    palette_name="rui",
+    alpha=0.5,
+    stride=1,
+    image_extension=".jpg",
+    label_extension=".png",
+):
     palette = PALETTE_MAP[palette_name]
     ensure_dir_normal_bits(output_dir)
     seg_files = sorted(
-        list(Path(seg_dir).glob("*.npy")) + list(Path(seg_dir).glob("*.png"))
+        list(Path(seg_dir).rglob("*.npy"))
+        + list(Path(seg_dir).rglob("*" + label_extension))
     )
-    image_files = sorted(Path(image_dir).glob("*.png"))
+    image_files = sorted(Path(image_dir).rglob("*" + image_extension))
     if len(seg_files) != len(image_files):
         raise ValueError(
             f"Different length inputs, {len(seg_files)}, {len(image_files)}"
@@ -86,16 +96,18 @@ def visualize(seg_dir, image_dir, output_dir, palette_name="rui", alpha=0.5, str
         list(zip(seg_files, image_files))[::stride], total=len(seg_files[::stride])
     ):
         seg = load_png_npy(seg_file)
-        img = np.flip(imread(image_file), axis=2)
+        img = imread(image_file)
 
         vis_seg = visualize_with_palette(seg, palette)
         blended = blend_images_gray(img, vis_seg, alpha)
 
-        concat = np.concatenate((img, vis_seg, blended), axis=0)
+        concat = np.concatenate((vis_seg, img, blended), axis=1)
         savepath = output_dir.joinpath(image_file.name)
-        gt_classes_savepath = output_dir.joinpath(image_file.name.replace(".png", "_vis_seg.png"))
+        # gt_classes_savepath = output_dir.joinpath(
+        #    image_file.name.replace(".png", "_vis_seg.png")
+        # )
         imwrite(str(savepath), concat)
-        imwrite(str(gt_classes_savepath), vis_seg)
+        # imwrite(str(gt_classes_savepath), vis_seg)
 
 
 def blend_images_gray(im1, im2, alpha=0.7):

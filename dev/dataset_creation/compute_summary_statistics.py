@@ -14,5 +14,7 @@ def parse_args():
 
 if __name__ == "__main__":
     args = parse_args()
-    means, stds = compute_summary_statistics(args.images_dir, args.num_files, extension=args.extension)
+    means, stds = compute_summary_statistics(
+        args.images_dir, args.num_files, extension=args.extension
+    )
     print(f"means: {means}\n, stds: {stds}")

@@ -15,7 +15,7 @@ def parse_args():
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--seg-dir", type=Path, required=True)
     parser.add_argument(
-        "--palette", default="safeforest23", choices=PALETTE_MAP.keys(), type=str
+        "--palette", default="matplotlib", choices=PALETTE_MAP.keys(), type=str
     )
     parser.add_argument(
         "--stride", default=1, type=int, help="Evaluate images every <stride>th image"
