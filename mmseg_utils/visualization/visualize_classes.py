@@ -68,7 +68,6 @@ def show_colormaps_flat(seg_map, class_names, mask=None, savepath=None):
     fig, axs = plt.subplots(1, num_classes)
 
     for index in range(num_classes):
-
         color = seg_map[index]
         color = np.expand_dims(color, (0, 1))
         vis_square = np.repeat(
@@ -157,15 +156,9 @@ def visualize(
 
         concat = np.concatenate((vis_seg, img, blended), axis=1)
         savepath = output_dir.joinpath(image_file.name)
-<<<<<<< HEAD
-        # gt_classes_savepath = output_dir.joinpath(
-        #    image_file.name.replace(".png", "_vis_seg.png")
-        # )
-=======
         gt_classes_savepath = output_dir.joinpath(
             image_file.name.replace(".png", "_vis_seg.png")
         )
->>>>>>> ebb7229e03505fb943f864f6b254c09e5b922938
         imwrite(str(savepath), concat)
         # imwrite(str(gt_classes_savepath), vis_seg)
 
