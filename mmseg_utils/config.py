@@ -56,6 +56,7 @@ SAFEFOREST_23_NAMES = [
     "People",
     "Sky",
     "Blurry",
+    "Obstacle",
     "Drone",
 ]
 
