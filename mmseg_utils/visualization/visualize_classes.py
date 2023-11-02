@@ -1,6 +1,6 @@
 import numpy as np
-import time
 from mmseg_utils.dataset_creation.file_utils import ensure_dir_normal_bits
+from mmseg_utils.utils.files import get_matching_files
 from imageio import imwrite, imread
 from glob import glob
 import time
@@ -127,26 +127,29 @@ def visualize(
     seg_dir,
     image_dir,
     output_dir,
-    palette_name="rui",
+    palette_name="matplotlib",
     alpha=0.5,
     stride=1,
-    image_extension=".jpg",
-    label_extension=".png",
+    image_extension="",
+    label_extension="",
+    ignore_substr_images_for_matching="",
+    ignore_substr_labels_for_matching="",
 ):
     palette = PALETTE_MAP[palette_name]
     ensure_dir_normal_bits(output_dir)
-    seg_files = sorted(
-        list(Path(seg_dir).rglob("*.npy"))
-        + list(Path(seg_dir).rglob("*" + label_extension))
+    image_files, seg_files = get_matching_files(
+        images_folder=image_dir,
+        labels_folder=seg_dir,
+        image_extension=image_extension,
+        label_extension=label_extension,
+        ignore_substr_images=ignore_substr_images_for_matching,
+        ignore_substr_labels=ignore_substr_labels_for_matching,
     )
-    image_files = sorted(Path(image_dir).rglob("*" + image_extension))
-    if len(seg_files) != len(image_files):
-        raise ValueError(
-            f"Different length inputs, {len(seg_files)}, {len(image_files)}"
-        )
 
     for seg_file, image_file in tqdm(
-        list(zip(seg_files, image_files))[::stride], total=len(seg_files[::stride])
+        list(zip(seg_files, image_files))[::stride],
+        total=len(seg_files[::stride]),
+        desc=f"visualizing to {output_dir}",
     ):
         seg = load_png_npy(seg_file)
         img = imread(image_file)
@@ -155,12 +158,9 @@ def visualize(
         blended = blend_images_gray(img, vis_seg, alpha)
 
         concat = np.concatenate((vis_seg, img, blended), axis=1)
-        savepath = output_dir.joinpath(image_file.name)
-        gt_classes_savepath = output_dir.joinpath(
-            image_file.name.replace(".png", "_vis_seg.png")
-        )
+        savepath = Path(output_dir, Path(image_file).relative_to(image_dir))
+        savepath.parent.mkdir(parents=True, exist_ok=True)
         imwrite(str(savepath), concat)
-        # imwrite(str(gt_classes_savepath), vis_seg)
 
 
 def blend_images_gray(im1, im2, alpha=0.7):

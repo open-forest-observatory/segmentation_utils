@@ -5,8 +5,8 @@ from pathlib import Path
 from numpy.random import choice
 
 
-def compute_summary_statistics(images, num_files=500, savepath=None, extension="png"):
-    files = list(Path(images).glob("*." + extension))
+def compute_summary_statistics(images, num_files=50, savepath=None, extension=""):
+    files = [x for x in Path(images).glob("*" + extension) if x.is_file()]
     files = choice(files, min(num_files, len(files)))
 
     imgs = [imread(x) for x in tqdm(files)]

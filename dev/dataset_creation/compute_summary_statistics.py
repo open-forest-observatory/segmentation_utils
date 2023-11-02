@@ -5,7 +5,7 @@ from mmseg_utils.dataset_creation.summary_statistics import compute_summary_stat
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--images-dir", required=True)
+    parser.add_argument("images_dir")
     parser.add_argument("--num-files", default=500, type=int)
     parser.add_argument("--extension", default="png")
     args = parser.parse_args()
