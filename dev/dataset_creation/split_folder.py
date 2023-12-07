@@ -6,7 +6,15 @@ from genericpath import exists
 from pathlib import Path
 from mmseg_utils.dataset_creation.mmseg_config import create_new_config
 from mmseg_utils.dataset_creation.summary_statistics import compute_summary_statistics
-from mmseg_utils.config import RGB_EXT, SEG_EXT, IMG_DIR, ANN_DIR, TRAIN_DIR, VAL_DIR
+from mmseg_utils.config import (
+    MATPLOTLIB_PALLETE,
+    RGB_EXT,
+    SEG_EXT,
+    IMG_DIR,
+    ANN_DIR,
+    TRAIN_DIR,
+    VAL_DIR,
+)
 from tqdm import tqdm
 from imageio import imread
 import numpy as np
@@ -14,7 +22,11 @@ import shutil
 import os
 from mmseg_utils.utils.files import get_matching_files
 
-from mmseg_utils.visualization.visualize_classes import load_png_npy, visualize
+from mmseg_utils.visualization.visualize_classes import (
+    load_png_npy,
+    show_colormaps,
+    visualize,
+)
 
 
 def parse_args():
@@ -25,7 +37,9 @@ def parse_args():
     parser.add_argument("--classes", nargs="+")
     parser.add_argument("--image-ext", default="JPG")
     parser.add_argument("--label-ext", default="png")
-    parser.add_argument("-train-frac", type=float, default=0.8)
+    parser.add_argument("--remove-old", action="store_true")
+    parser.add_argument("--train-frac", type=float, default=0.8)
+    parser.add_argument("--vis-stride", type=int, default=20)
 
     args = parser.parse_args()
     return args
@@ -46,6 +60,7 @@ if __name__ == "__main__":
             )
         )
     )
+
     image_files = image_files[valid_labels]
     label_files = label_files[valid_labels]
     n_valid = len(image_files)
@@ -55,10 +70,12 @@ if __name__ == "__main__":
     IMG_VAL = Path(args.output_folder, IMG_DIR, VAL_DIR)
     ANN_TRAIN = Path(args.output_folder, ANN_DIR, TRAIN_DIR)
     ANN_VAL = Path(args.output_folder, ANN_DIR, VAL_DIR)
-    [
-        shutil.rmtree(x, ignore_errors=True)
-        for x in (IMG_TRAIN, IMG_VAL, ANN_TRAIN, ANN_VAL)
-    ]
+
+    if args.remove_old:
+        [
+            shutil.rmtree(x, ignore_errors=True)
+            for x in (IMG_TRAIN, IMG_VAL, ANN_TRAIN, ANN_VAL)
+        ]
     [os.makedirs(x, exist_ok=True) for x in (IMG_TRAIN, IMG_VAL, ANN_TRAIN, ANN_VAL)]
 
     for i in tqdm(
@@ -82,10 +99,7 @@ if __name__ == "__main__":
             ),
         )
 
-    vis_train = Path(args.output_folder, "vis", "train")
-    vis_val = Path(args.output_folder, "vis", "val")
-
-    mean, std = compute_summary_statistics(images=IMG_TRAIN)
+    mean, std = compute_summary_statistics(images=IMG_TRAIN, num_files=20)
     print(f"mean: {mean}, std: {std}")
     if args.classes is not None:
         output_config = Path(args.output_folder, Path(args.output_folder).stem + ".py")
@@ -98,13 +112,22 @@ if __name__ == "__main__":
             classes=args.classes,
             data_root=args.output_folder,
         )
+    vis_train = Path(args.output_folder, "vis", "train")
+    vis_val = Path(args.output_folder, "vis", "val")
+    vis_train.mkdir(exist_ok=True, parents=True)
 
+    show_colormaps(
+        MATPLOTLIB_PALLETE,
+        class_names=args.classes,
+        savepath=Path(args.output_folder, "colormap.png"),
+    )
     visualize(
         ANN_TRAIN,
         IMG_TRAIN,
         vis_train,
         ignore_substr_images_for_matching=RGB_EXT,
         ignore_substr_labels_for_matching=SEG_EXT,
+        stride=args.vis_stride,
     )
     visualize(
         ANN_VAL,
@@ -112,4 +135,5 @@ if __name__ == "__main__":
         vis_val,
         ignore_substr_images_for_matching=RGB_EXT,
         ignore_substr_labels_for_matching=SEG_EXT,
+        stride=args.vis_stride,
     )
