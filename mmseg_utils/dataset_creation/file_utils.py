@@ -65,7 +65,7 @@ def get_files(
     return files
 
 
-def generate_output_file(output_folder, index, is_ann, is_train):
+def generate_output_file(output_folder, index, is_ann, is_train, suffix=".png"):
     """
     output_folder:
     index:
@@ -78,7 +78,7 @@ def generate_output_file(output_folder, index, is_ann, is_train):
         TRAIN_DIR if is_train else VAL_DIR,
     )
     ensuredir(output_sub_folder, mode=0o0755)
-    filename = f"{index:06d}{SEG_EXT if is_ann else RGB_EXT}.png"
+    filename = f"{index:06d}{SEG_EXT if is_ann else RGB_EXT}{suffix}"
     output_filepath = Path(output_sub_folder, filename)
     return output_filepath
 
@@ -98,8 +98,16 @@ def write_cityscapes_file(
     imwrite_skimage(str(output_filepath), img)
 
 
-def link_cityscapes_file(img_path, output_folder, index, is_ann, is_train):
-    output_filepath = generate_output_file(output_folder, index, is_ann, is_train)
+def link_cityscapes_file(
+    img_path, output_folder, index, is_ann, is_train, exist_ok=False
+):
+    output_filepath = generate_output_file(
+        output_folder, index, is_ann, is_train, suffix=Path(img_path).suffix
+    )
+    # Don't link if already there, coult be dangerous
+    if os.path.isfile(output_filepath) and exist_ok:
+        return
+
     symlink(img_path, output_filepath)
 
 
