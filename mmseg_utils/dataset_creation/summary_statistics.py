@@ -11,9 +11,12 @@ def compute_summary_statistics(images, num_files=50, savepath=None, extension=""
     files = choice(files, min(num_files, len(files)))
 
     imgs = [imread(x) for x in tqdm(files)]
+    # Deal with different size images
+    imgs = [np.reshape(img, (-1, 3)) for img in imgs]
     imgs = np.concatenate(imgs, axis=0)  # tile vertically
-    mean = np.mean(imgs, axis=(0, 1))
-    std = np.std(imgs, axis=(0, 1))
+    print(imgs.shape)
+    mean = np.mean(imgs, axis=0)
+    std = np.std(imgs, axis=0)
 
     means, stds = mean.tolist(), std.tolist()
     if savepath is not None:
