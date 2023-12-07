@@ -20,17 +20,6 @@ def convert_colors_to_indices(img: np.ndarray, palette: np.ndarray):
 
 def imwrite_skimage(filename, img):
     """Take an RGB or RGBA image and write it using OpenCV"""
-    shape = img.shape
     filename = str(filename)
-    if len(shape) == 3 and shape[2] == 3:
-        # RGB
-        img = np.flip(img, axis=2)
-    elif len(shape) == 3 and shape[2] == 4:
-        # RGBA
-        img = np.stack((np.flip(img[..., :3], axis=2), img[..., 3:4]), axis=2)
-    elif len(shape) == 2:
-        pass
-    else:
-        raise ValueError()
 
     imsave(filename, img)
