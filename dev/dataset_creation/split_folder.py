@@ -1,27 +1,28 @@
 import argparse
+import os
+import shutil
 from ast import AsyncFunctionDef
 from codecs import ignore_errors
 from ctypes.wintypes import RGB
-from genericpath import exists
 from pathlib import Path
-from mmseg_utils.dataset_creation.mmseg_config import create_new_config
-from mmseg_utils.dataset_creation.summary_statistics import compute_summary_statistics
+
+import numpy as np
+from genericpath import exists
+from imageio import imread
+from tqdm import tqdm
+
 from mmseg_utils.config import (
+    ANN_DIR,
+    IMG_DIR,
     MATPLOTLIB_PALLETE,
     RGB_EXT,
     SEG_EXT,
-    IMG_DIR,
-    ANN_DIR,
     TRAIN_DIR,
     VAL_DIR,
 )
-from tqdm import tqdm
-from imageio import imread
-import numpy as np
-import shutil
-import os
+from mmseg_utils.dataset_creation.mmseg_config import create_new_config
+from mmseg_utils.dataset_creation.summary_statistics import compute_summary_statistics
 from mmseg_utils.utils.files import get_matching_files
-
 from mmseg_utils.visualization.visualize_classes import (
     load_png_npy,
     show_colormaps,

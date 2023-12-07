@@ -1,29 +1,27 @@
-import pandas as pd
-from pathlib import Path
-import numpy as np
-from skimage.io import imread
-from skimage.draw import polygon as skimg_polygon
-import matplotlib.pyplot as plt
-from tqdm import tqdm
+import json
 import os
 import shutil
-import json
-from mmseg_utils.visualization.visualize_classes import visualize, show_colormaps
-from mmseg_utils.dataset_creation.summary_statistics import compute_summary_statistics
+from argparse import ArgumentParser
+from pathlib import Path
 
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from skimage.draw import polygon as skimg_polygon
+from skimage.io import imread
+from tqdm import tqdm
 
-from mmseg_utils.dataset_creation.file_utils import (
-    write_cityscapes_file,
-)
 from mmseg_utils.config import (
     CLASS_MAP,
-    IGNORE_INDEX,
-    COLUMN_NAMES,
-    PALETTE_MAP,
     CLASS_NAMES,
+    COLUMN_NAMES,
+    IGNORE_INDEX,
+    PALETTE_MAP,
 )
+from mmseg_utils.dataset_creation.file_utils import write_cityscapes_file
 from mmseg_utils.dataset_creation.split_utils import get_is_train_array
-from argparse import ArgumentParser
+from mmseg_utils.dataset_creation.summary_statistics import compute_summary_statistics
+from mmseg_utils.visualization.visualize_classes import show_colormaps, visualize
 
 
 def parse_args():

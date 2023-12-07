@@ -1,10 +1,12 @@
-import numpy as np
-from tqdm import tqdm
 import os
 from pathlib import Path
-from mmseg_utils.dataset_creation.file_utils import read_npy_or_img
+
+import numpy as np
 from imageio import imwrite
 from skimage.transform import resize
+from tqdm import tqdm
+
+from mmseg_utils.dataset_creation.file_utils import read_npy_or_img
 
 
 def remap_folder(input_folder, output_folder, remap, glob="*", output_img_size=None):

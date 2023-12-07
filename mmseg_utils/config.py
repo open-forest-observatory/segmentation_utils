@@ -1,6 +1,6 @@
 import matplotlib
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 RGB_EXT = "_rgb"
 SEG_EXT = "_segmentation"

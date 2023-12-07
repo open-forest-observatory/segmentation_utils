@@ -1,6 +1,7 @@
-from mmseg.apis import init_model, inference_model
 from argparse import ArgumentParser
 from pathlib import Path
+
+from mmseg.apis import inference_model, init_model
 
 
 def parse_args():

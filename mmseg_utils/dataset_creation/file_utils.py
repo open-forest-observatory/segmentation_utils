@@ -1,10 +1,12 @@
-import numpy as np
 import os
 from pathlib import Path
-from ubelt import ensuredir, symlink
+
+import numpy as np
 from imageio import imread
+from ubelt import ensuredir, symlink
+
+from mmseg_utils.config import ANN_DIR, IMG_DIR, RGB_EXT, SEG_EXT, TRAIN_DIR, VAL_DIR
 from mmseg_utils.dataset_creation.img_utils import imwrite_skimage
-from mmseg_utils.config import ANN_DIR, IMG_DIR, TRAIN_DIR, VAL_DIR, SEG_EXT, RGB_EXT
 
 
 def pad_filename(filename: Path, start_index=None, end_index=None, pad_length: int = 6):

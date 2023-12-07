@@ -1,8 +1,9 @@
-from imageio import imread
-import numpy as np
-from tqdm import tqdm
 from pathlib import Path
+
+import numpy as np
+from imageio import imread
 from numpy.random import choice
+from tqdm import tqdm
 
 
 def compute_summary_statistics(images, num_files=50, savepath=None, extension=""):

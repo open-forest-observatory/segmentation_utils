@@ -1,13 +1,15 @@
+import time
+from glob import glob
+from pathlib import Path
+
+import matplotlib.pyplot as plt
 import numpy as np
+from imageio import imread, imwrite
+from tqdm import tqdm
+
+from mmseg_utils.config import PALETTE_MAP
 from mmseg_utils.dataset_creation.file_utils import ensure_dir_normal_bits
 from mmseg_utils.utils.files import get_matching_files
-from imageio import imwrite, imread
-from glob import glob
-import time
-import matplotlib.pyplot as plt
-from mmseg_utils.config import PALETTE_MAP
-from pathlib import Path
-from tqdm import tqdm
 
 
 def visualize_with_palette(index_image, palette, ignore_ind=255):

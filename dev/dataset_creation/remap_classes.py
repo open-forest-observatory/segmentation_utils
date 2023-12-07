@@ -1,7 +1,9 @@
 import argparse
-from pathlib import Path
 import shutil
+from pathlib import Path
+
 import numpy as np
+
 from mmseg_utils.dataset_creation.class_utils import remap_folder
 
 

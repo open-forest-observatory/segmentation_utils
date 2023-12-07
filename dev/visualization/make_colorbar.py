@@ -1,6 +1,7 @@
-from mmseg_utils.visualization.visualize_classes import show_colormaps_flat
-from mmseg_utils.config import CLASS_NAMES, PALETTE_MAP
 import numpy as np
+
+from mmseg_utils.config import CLASS_NAMES, PALETTE_MAP
+from mmseg_utils.visualization.visualize_classes import show_colormaps_flat
 
 # weights = np.array(
 #    [
