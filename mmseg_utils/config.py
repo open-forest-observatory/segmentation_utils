@@ -1,3 +1,4 @@
+import matplotlib
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -77,8 +78,8 @@ def hex_to_rgb(value):
     return tuple(int(value[i : i + lv // 3], 16) for i in range(0, lv, lv // 3))
 
 
-MATPLOTLIB_PALLETE = np.array(
-    [hex_to_rgb(x) for x in plt.rcParams["axes.prop_cycle"].by_key()["color"]]
+MATPLOTLIB_PALLETE = (np.array(matplotlib.colormaps["tab20"].colors) * 255).astype(
+    np.uint8
 )
 
 

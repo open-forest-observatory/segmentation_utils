@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 import os
 import shutil
+import json
 from mmseg_utils.visualization.visualize_classes import visualize, show_colormaps
 from mmseg_utils.dataset_creation.summary_statistics import compute_summary_statistics
 
@@ -24,14 +25,11 @@ from mmseg_utils.config import (
 from mmseg_utils.dataset_creation.split_utils import get_is_train_array
 from argparse import ArgumentParser
 
-ANNOTATION_FILE = "/home/frc-ag-1/Downloads/oporto_2021_12_17_collect_1 (1).csv"
-IMAGE_FOLDER = "/media/frc-ag-1/Elements/data/Safeforest_CMU_data_dvc/data/site_Oporto_clearing/2021_12_17/collect_1/processed_1/images/mapping_left"
-
 
 def parse_args():
     parser = ArgumentParser()
-    parser.add_argument("--image-folder", default=IMAGE_FOLDER)
-    parser.add_argument("--annotation-file", default=ANNOTATION_FILE)
+    parser.add_argument("--image-folder")
+    parser.add_argument("--annotation-file")
     parser.add_argument("--output-folder", required=True)
     parser.add_argument("--train-frac", type=float, default=0.8)
     parser.add_argument("--image-extension", default="jpg")
@@ -89,13 +87,21 @@ def main(
     output_train_ann_dir = Path(output_folder, "ann_dir", "train")
 
     os.makedirs(output_folder, exist_ok=True)
-    class_map = CLASS_MAP[dataset_identifier]
+    meta_file = Path(Path(annotation_file).parent, "meta.json")
 
-    show_colormaps(
-        PALETTE_MAP[dataset_identifier],
-        CLASS_NAMES[dataset_identifier],
-        #    savepath=Path(output_folder, "class_color_vis.png"),
-    )
+    with open(meta_file, "r") as infile:
+        metadata = json.load(infile)
+
+    class_map = {x: i for i, x in enumerate(metadata["customTypeStyling"].keys())}
+    class_map["unknown"] = ignore_index
+    print(class_map)
+
+    # TODO this should be added back in again
+    # show_colormaps(
+    #    PALETTE_MAP[dataset_identifier],
+    #    CLASS_NAMES[dataset_identifier],
+    #    #    savepath=Path(output_folder, "class_color_vis.png"),
+    # )
 
     image_paths = list(Path(image_folder).glob("*." + image_extension))
     annotation_df = pd.read_csv(annotation_file, sep=",", names=COLUMN_NAMES)
@@ -137,6 +143,7 @@ def main(
         images=output_train_img_dir,
         savepath=Path(output_folder, "summary_statistics.txt"),
     )
+    # TODO this should actually write the training file
 
 
 if __name__ == "__main__":
