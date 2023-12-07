@@ -60,14 +60,15 @@ def create_label_image(image_path, annotation_df, class_map, ignore_index=IGNORE
             polygon = np.array(row["polygon"][7:].split(" ")).astype(int)
         except TypeError:
             continue
-        # Convert to (I assume) i, j points
-        polygon = np.reshape(polygon, (int(polygon.shape[0] / 2), 2))
-
+        # Convert to i, j points
+        polygon = np.flip(np.reshape(polygon, (int(polygon.shape[0] / 2), 2)), axis=1)
+        # Create a mask for the area inside the polygon
         polygon_mask = polygon2mask(polygon=polygon, image_shape=img_shape)
+        # Get the class ID for this polygon
         class_ID = class_map[row["class"]]
-
+        # Extract the current mask for that class
         class_mask = label_mask_dict[class_ID]
-        # Add the new label
+        # Update the label for that class
         label_mask_dict[class_ID] = np.logical_or(class_mask, polygon_mask)
 
     # Pre-populate the label image with the null value
