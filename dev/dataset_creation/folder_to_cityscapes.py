@@ -1,33 +1,25 @@
 import argparse
 import os
 import shutil
-from ast import AsyncFunctionDef
-from codecs import ignore_errors
-from ctypes.wintypes import RGB
 from pathlib import Path
 
 import numpy as np
-from genericpath import exists
-from imageio import imread
 from tqdm import tqdm
 
 from mmseg_utils.config import (
     ANN_DIR,
     IMG_DIR,
-    MATPLOTLIB_PALLETE,
     RGB_EXT,
     SEG_EXT,
     TRAIN_DIR,
     VAL_DIR,
 )
-from mmseg_utils.dataset_creation.mmseg_config import create_new_config
-from mmseg_utils.dataset_creation.summary_statistics import compute_summary_statistics
 from mmseg_utils.utils.files import get_matching_files
 from mmseg_utils.visualization.visualize_classes import (
     load_png_npy,
-    show_colormaps,
-    visualize,
 )
+from mmseg_utils.dataset_creation.dataset_utils import process_dataset_images
+from mmseg_utils.dataset_creation.mmseg_config import create_new_config
 
 
 def parse_args():
@@ -50,7 +42,12 @@ if __name__ == "__main__":
     args = parse_args()
 
     image_files, label_files = get_matching_files(
-        args.images_folder, args.labels_folder, args.image_ext, args.label_ext
+        args.images_folder,
+        args.labels_folder,
+        args.image_ext,
+        args.label_ext,
+        ignore_substr_images=RGB_EXT,
+        ignore_substr_labels=SEG_EXT,
     )
 
     valid_labels = np.array(
@@ -100,41 +97,8 @@ if __name__ == "__main__":
             ),
         )
 
-    mean, std = compute_summary_statistics(images=IMG_TRAIN, num_files=20)
-    print(f"mean: {mean}, std: {std}")
-    if args.classes is not None:
-        output_config = Path(args.output_folder, Path(args.output_folder).stem + ".py")
-        print(f"About to save config to {output_config}")
-        create_new_config(
-            "configs/cityscapes_forests.py",
-            output_config_file=output_config,
-            mean=mean,
-            std=std,
-            classes=args.classes,
-            data_root=args.output_folder,
-        )
-    vis_train = Path(args.output_folder, "vis", "train")
-    vis_val = Path(args.output_folder, "vis", "val")
-    vis_train.mkdir(exist_ok=True, parents=True)
-
-    show_colormaps(
-        MATPLOTLIB_PALLETE,
+    process_dataset_images(
+        training_images_folder=IMG_TRAIN,
         class_names=args.classes,
-        savepath=Path(args.output_folder, "colormap.png"),
-    )
-    visualize(
-        ANN_TRAIN,
-        IMG_TRAIN,
-        vis_train,
-        ignore_substr_images_for_matching=RGB_EXT,
-        ignore_substr_labels_for_matching=SEG_EXT,
-        stride=args.vis_stride,
-    )
-    visualize(
-        ANN_VAL,
-        IMG_VAL,
-        vis_val,
-        ignore_substr_images_for_matching=RGB_EXT,
-        ignore_substr_labels_for_matching=SEG_EXT,
-        stride=args.vis_stride,
+        output_folder=args.output_folder,
     )

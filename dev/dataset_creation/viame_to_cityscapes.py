@@ -22,10 +22,11 @@ from mmseg_utils.dataset_creation.file_utils import (
     link_cityscapes_file,
     write_cityscapes_file,
 )
+
+from mmseg_utils.dataset_creation.dataset_utils import process_dataset_images
 from mmseg_utils.dataset_creation.mmseg_config import create_new_config
 from mmseg_utils.dataset_creation.split_utils import get_is_train_array
-from mmseg_utils.dataset_creation.summary_statistics import compute_summary_statistics
-from mmseg_utils.visualization.visualize_classes import show_colormaps, visualize
+from mmseg_utils.visualization.visualize_classes import show_colormaps
 
 
 def parse_args():
@@ -114,12 +115,6 @@ def main(
     class_names = list(class_map.keys())
     class_names.pop(class_names.index("unknown"))
 
-    show_colormaps(
-        MATPLOTLIB_PALLETE,
-        class_names=class_names,
-        savepath=Path(output_folder, "class_color_vis.png"),
-    )
-
     image_paths = list(Path(image_folder).glob("*." + image_extension))
     annotation_df = pd.read_csv(annotation_file, sep=",", names=COLUMN_NAMES)
 
@@ -159,29 +154,11 @@ def main(
         # Increament number of valid images
         valid_index += 1
 
-    if write_config:
-        mean, std = compute_summary_statistics(
-            images=output_train_img_dir,
-            savepath=Path(output_folder, "summary_statistics.txt"),
-        )
-        output_config = Path(output_folder, Path(output_folder).stem + ".py")
-        create_new_config(
-            "configs/cityscapes_forests.py",
-            output_config_file=output_config,
-            mean=mean,
-            std=std,
-            classes=class_names,
-            data_root=output_folder,
-        )
-
-    if vis:
-        visualize(
-            seg_dir=Path(output_folder, "ann_dir", "train"),
-            image_dir=Path(output_folder, "img_dir", "train"),
-            output_dir=Path(output_folder, "train_vis"),
-            ignore_substr_images_for_matching=RGB_EXT,
-            ignore_substr_labels_for_matching=SEG_EXT,
-        )
+    process_dataset_images(
+        training_images_folder=output_train_img_dir,
+        class_names=class_names,
+        output_folder=output_folder,
+    )
 
 
 if __name__ == "__main__":
