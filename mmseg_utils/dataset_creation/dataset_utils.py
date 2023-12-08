@@ -1,16 +1,17 @@
-from mmseg_utils.dataset_creation.summary_statistics import compute_summary_statistics
-from mmseg_utils.dataset_creation.mmseg_config import create_new_config
-from mmseg_utils.visualization.visualize_classes import visualize, show_colormaps
 from pathlib import Path
+
 from mmseg_utils.config import (
-    MATPLOTLIB_PALLETE,
     ANN_DIR,
     IMG_DIR,
+    MATPLOTLIB_PALLETE,
+    RGB_EXT,
+    SEG_EXT,
     TRAIN_DIR,
     VAL_DIR,
-    SEG_EXT,
-    RGB_EXT,
 )
+from mmseg_utils.dataset_creation.mmseg_config import create_new_config
+from mmseg_utils.dataset_creation.summary_statistics import compute_summary_statistics
+from mmseg_utils.visualization.visualize_classes import show_colormaps, visualize
 
 
 def process_dataset_images(

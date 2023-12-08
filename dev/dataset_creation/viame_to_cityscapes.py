@@ -11,22 +11,13 @@ from skimage.draw import polygon2mask
 from skimage.io import imread
 from tqdm import tqdm
 
-from mmseg_utils.config import (
-    COLUMN_NAMES,
-    IGNORE_INDEX,
-    MATPLOTLIB_PALLETE,
-    RGB_EXT,
-    SEG_EXT,
-)
+from mmseg_utils.config import COLUMN_NAMES, IGNORE_INDEX
+from mmseg_utils.dataset_creation.dataset_utils import process_dataset_images
 from mmseg_utils.dataset_creation.file_utils import (
     link_cityscapes_file,
     write_cityscapes_file,
 )
-
-from mmseg_utils.dataset_creation.dataset_utils import process_dataset_images
-from mmseg_utils.dataset_creation.mmseg_config import create_new_config
 from mmseg_utils.dataset_creation.split_utils import get_is_train_array
-from mmseg_utils.visualization.visualize_classes import show_colormaps
 
 
 def parse_args():
