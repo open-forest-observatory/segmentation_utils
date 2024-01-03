@@ -17,7 +17,6 @@ def get_matching_files(
 ):
     image_files = keep_only_files((Path(images_folder).rglob("*" + image_extension)))
     label_files = keep_only_files((Path(labels_folder).rglob("*" + label_extension)))
-
     image_stems = [
         str(x.relative_to(images_folder).with_suffix("")).replace(
             ignore_substr_images, ""

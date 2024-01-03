@@ -1,6 +1,7 @@
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+from pathlib import Path
 
 RGB_EXT = "_rgb"
 SEG_EXT = "_segmentation"
@@ -8,6 +9,10 @@ IMG_DIR = "img_dir"
 ANN_DIR = "ann_dir"
 TRAIN_DIR = "train"
 VAL_DIR = "val"
+
+DEFAULT_CITYSCAPES_CONFIG = Path(
+    Path(__file__), "..", "..", "configs", "cityscapes_forests.py"
+).resolve()
 
 IGNORE_INDEX = 255
 
@@ -76,11 +81,6 @@ def hex_to_rgb(value):
     value = value.lstrip("#")
     lv = len(value)
     return tuple(int(value[i : i + lv // 3], 16) for i in range(0, lv, lv // 3))
-
-
-MATPLOTLIB_PALLETE = (np.array(matplotlib.colormaps["tab20"].colors) * 255).astype(
-    np.uint8
-)
 
 
 SAFEFOREST_23_CLASS_MAP = {
@@ -154,7 +154,6 @@ CLASS_NAMES = {
 }
 PALETTE_MAP = {
     "basic": SAFEFOREST_23_CONDENSED_PALETTE,
-    "matplotlib": MATPLOTLIB_PALLETE,
     "safeforest23": SAFEFOREST_23_PALETTE,
     "safeforest23_condensed": SAFEFOREST_23_CONDENSED_PALETTE,
 }

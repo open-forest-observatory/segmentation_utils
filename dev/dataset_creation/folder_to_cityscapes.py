@@ -91,4 +91,5 @@ if __name__ == "__main__":
         training_images_folder=IMG_TRAIN,
         class_names=args.classes,
         output_folder=args.output_folder,
+        vis_stride=args.vis_stride,
     )

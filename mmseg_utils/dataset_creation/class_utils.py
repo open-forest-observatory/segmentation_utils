@@ -9,18 +9,22 @@ from tqdm import tqdm
 from mmseg_utils.dataset_creation.file_utils import read_npy_or_img
 
 
-def remap_folder(input_folder, output_folder, remap, glob="*", output_img_size=None):
+def remap_folder(
+    input_folder, output_folder, remap, glob_str="*", output_img_size=None
+):
     os.makedirs(output_folder, exist_ok=True)
-    input_files = Path(input_folder).glob(glob)
+    input_files = Path(input_folder).rglob(glob_str)
+    input_files = list(filter(lambda x: x.is_file(), input_files))
     for input_file in tqdm(input_files):
         input_label = read_npy_or_img(input_file)
         output_label = remap_classes_bool_indexing(input_label, remap)
         if output_img_size is not None:
             output_label = resize(output_label, output_shape=output_img_size, order=0)
 
-        output_file = Path(output_folder, input_file.name)
+        output_file = Path(output_folder, input_file.relative_to(input_folder))
         if output_file.suffix == ".npy":
             output_file = output_file.with_suffix(".png")
+        output_file.parent.mkdir(parents=True, exist_ok=True)
         output_label = output_label.astype(np.uint8)
         imwrite(output_file, output_label)
 

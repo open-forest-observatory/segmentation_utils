@@ -23,14 +23,3 @@ def create_new_config(
                     .replace("INSERT_DATA_ROOT", '"' + data_root + '"')
                 )
                 outfile_h.write(updated_line)
-
-
-if __name__ == "__main__":
-    create_new_config(
-        "configs/cityscapes_forests.py",
-        "configs/cityscapes_forests_derived.py",
-        [111.13859077733052, 117.59985508060974, 102.2959851538855],
-        [73.30937007947439, 72.43582125151995, 65.35098998632455],
-        ("ABCO", "CADE", "PILA", "PIPO", "PSME", "QUEV", "SNAG", "GROUND"),
-        "/ofo-share/repos-david/semantic-mesh-pytorch3d/data/species-class-seed-kernel/training_data/chips/",
-    )

@@ -1,7 +1,6 @@
-import time
-from glob import glob
 from pathlib import Path
 
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from imageio import imread, imwrite
@@ -12,22 +11,34 @@ from mmseg_utils.dataset_creation.file_utils import ensure_dir_normal_bits
 from mmseg_utils.utils.files import get_matching_files
 
 
-def visualize_with_palette(index_image, palette, ignore_ind=255):
+def visualize_with_cmap(index_image, cmap_name, ignore_ind=255):
     """
     index_image : np.ndarray
         The predicted semantic map with indices. (H,W)
-    palette : np.ndarray
+    cmap_name : np.ndarray
         The colors for each index. (N classes,3)
     """
-    h, w = index_image.shape
-    index_image = index_image.flatten()
+    # Get the colormapping object
+    cmap = plt.get_cmap(cmap_name)
+    # Actually do the colormapping
+    # TODO see if this will out return out of range error for the null index
+    # Extract the first three channels, dropping alpha
+    colored_image = cmap(index_image, bytes=True)[..., :3]
 
+    # Compute which enties are not the ignore ind
     dont_ignore = index_image != ignore_ind
-    output = np.zeros((index_image.shape[0], 3))
-    colored_image = palette[index_image[dont_ignore]]
-    output[dont_ignore] = colored_image
-    colored_image = np.reshape(output, (h, w, 3))
-    return colored_image.astype(np.uint8)
+
+    # No ignore inds entries
+    if np.all(dont_ignore):
+        output = colored_image
+    else:
+        # Create an output array of zeros
+        output = np.zeros(
+            (index_image.shape[0], index_image.shape[1], 3), dtype=np.uint8
+        )
+        # Set the colored values for the non-ignored indices
+        output[dont_ignore] = colored_image[dont_ignore]
+    return output
 
 
 def blend_images(im1, im2, alpha=0.7):
@@ -87,16 +98,18 @@ def show_colormaps_flat(seg_map, class_names, mask=None, savepath=None):
         plt.close()
 
 
-def show_colormaps(seg_map, class_names, savepath=None):
+def show_colormaps(cmap_name, class_names, savepath=None):
     num_classes = len(class_names)
     n_squares = int(np.ceil(np.sqrt(num_classes)))
-    fig, axs = plt.subplots(n_squares, n_squares)
+    matplotlib.use("Agg")
+    _, axs = plt.subplots(n_squares, n_squares)
 
+    cmap = plt.get_cmap(cmap_name)
     for index in range(num_classes):
         i = index // n_squares
         j = index % n_squares
 
-        color = seg_map[index]
+        color = cmap(index)
         color = np.expand_dims(color, (0, 1))
         vis_square = np.repeat(
             np.repeat(color, repeats=100, axis=0), repeats=100, axis=1
@@ -129,7 +142,7 @@ def visualize(
     seg_dir,
     image_dir,
     output_dir,
-    palette_name="matplotlib",
+    cmap_name="tab10",
     alpha=0.5,
     stride=1,
     image_extension="",
@@ -137,7 +150,6 @@ def visualize(
     ignore_substr_images_for_matching="",
     ignore_substr_labels_for_matching="",
 ):
-    palette = PALETTE_MAP[palette_name]
     ensure_dir_normal_bits(output_dir)
     image_files, seg_files = get_matching_files(
         images_folder=image_dir,
@@ -156,7 +168,7 @@ def visualize(
         seg = load_png_npy(seg_file)
         img = imread(image_file)
 
-        vis_seg = visualize_with_palette(seg, palette)
+        vis_seg = visualize_with_cmap(seg, cmap_name)
         blended = blend_images_gray(img, vis_seg, alpha)
 
         concat = np.concatenate((vis_seg, img, blended), axis=1)

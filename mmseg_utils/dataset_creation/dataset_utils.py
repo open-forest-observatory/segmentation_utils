@@ -3,11 +3,11 @@ from pathlib import Path
 from mmseg_utils.config import (
     ANN_DIR,
     IMG_DIR,
-    MATPLOTLIB_PALLETE,
     RGB_EXT,
     SEG_EXT,
     TRAIN_DIR,
     VAL_DIR,
+    DEFAULT_CITYSCAPES_CONFIG,
 )
 from mmseg_utils.dataset_creation.mmseg_config import create_new_config
 from mmseg_utils.dataset_creation.summary_statistics import compute_summary_statistics
@@ -21,6 +21,7 @@ def process_dataset_images(
     num_summary_files=20,
     summary_subsample=100,
     vis_stride=50,
+    cmap_name="tab10",
 ):
     mean, std = compute_summary_statistics(
         images=training_images_folder,
@@ -33,7 +34,7 @@ def process_dataset_images(
         output_config = Path(output_folder, Path(output_folder).stem + ".py")
         print(f"About to save config to {output_config}")
         create_new_config(
-            "configs/cityscapes_forests.py",
+            DEFAULT_CITYSCAPES_CONFIG,
             output_config_file=output_config,
             mean=mean,
             std=std,
@@ -46,7 +47,7 @@ def process_dataset_images(
     vis_train.mkdir(exist_ok=True, parents=True)
 
     show_colormaps(
-        MATPLOTLIB_PALLETE,
+        cmap_name=cmap_name,
         class_names=class_names,
         savepath=Path(output_folder, "colormap.png"),
     )
