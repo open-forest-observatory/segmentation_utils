@@ -56,6 +56,7 @@ model = dict(
 )
 dataset_type = "CityscapesForestsDataset"
 data_root = INSERT_DATA_ROOT
+img_suffix=IMG_SUFFIX
 classes = INSERT_CLASSES
 crop_size = (1024, 1024)
 train_pipeline = [
@@ -106,6 +107,7 @@ train_dataloader = dict(
     dataset=dict(
         type="CityscapesForestsDataset",
         data_root=INSERT_DATA_ROOT,
+        img_suffix=IMG_SUFFIX,
         classes=INSERT_CLASSES,
         data_prefix=dict(img_path="img_dir/train", seg_map_path="ann_dir/train"),
         pipeline=[
@@ -132,6 +134,7 @@ val_dataloader = dict(
     dataset=dict(
         type="CityscapesForestsDataset",
         data_root=INSERT_DATA_ROOT,
+        img_suffix=IMG_SUFFIX,
         classes=INSERT_CLASSES,
         data_prefix=dict(img_path="img_dir/val", seg_map_path="ann_dir/val"),
         pipeline=[
@@ -150,6 +153,7 @@ test_dataloader = dict(
     dataset=dict(
         type="CityscapesForestsDataset",
         data_root=INSERT_DATA_ROOT,
+        img_suffix=IMG_SUFFIX,
         classes=INSERT_CLASSES,
         data_prefix=dict(img_path="img_dir/val", seg_map_path="ann_dir/val"),
         pipeline=[

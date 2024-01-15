@@ -5,6 +5,7 @@ def create_new_config(
     std=None,
     classes=None,
     data_root=None,
+    img_suffix=None,
 ):
     num_classes = len(classes)
 
@@ -21,5 +22,6 @@ def create_new_config(
                     .replace("INSERT_CLASSES", classes)
                     .replace("INSERT_NUM_CLASSES", num_classes)
                     .replace("INSERT_DATA_ROOT", '"' + data_root + '"')
+                    .replace("IMG_SUFFIX", '"' + img_suffix + '"')
                 )
                 outfile_h.write(updated_line)

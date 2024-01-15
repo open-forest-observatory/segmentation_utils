@@ -32,6 +32,10 @@ def process_dataset_images(
 
     if class_names is not None:
         output_config = Path(output_folder, Path(output_folder).stem + ".py")
+
+        img_suffix = next(training_images_folder.glob("*")).suffix
+        img_suffix = f"_rgb{img_suffix}"
+
         print(f"About to save config to {output_config}")
         create_new_config(
             DEFAULT_CITYSCAPES_CONFIG,
@@ -40,6 +44,7 @@ def process_dataset_images(
             std=std,
             classes=class_names,
             data_root=output_folder,
+            img_suffix=img_suffix,
         )
 
     vis_train = Path(output_folder, "vis", "train")
