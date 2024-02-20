@@ -20,7 +20,7 @@ def process_dataset_images(
     output_folder,
     num_summary_files=20,
     summary_subsample=100,
-    vis_stride=50,
+    vis_number=10,
     cmap_name="tab10",
 ):
     mean, std = compute_summary_statistics(
@@ -68,7 +68,7 @@ def process_dataset_images(
         vis_train,
         ignore_substr_images_for_matching=RGB_EXT,
         ignore_substr_labels_for_matching=SEG_EXT,
-        stride=vis_stride,
+        vis_number=vis_number,
     )
     visualize(
         ann_val_folder,
@@ -76,5 +76,5 @@ def process_dataset_images(
         vis_val,
         ignore_substr_images_for_matching=RGB_EXT,
         ignore_substr_labels_for_matching=SEG_EXT,
-        stride=vis_stride,
+        vis_number=vis_number,
     )

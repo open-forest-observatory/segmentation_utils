@@ -22,7 +22,7 @@ def parse_args():
     parser.add_argument("--label-ext", default="png")
     parser.add_argument("--remove-old", action="store_true")
     parser.add_argument("--train-frac", type=float, default=0.8)
-    parser.add_argument("--vis-stride", type=int, default=20)
+    parser.add_argument("--vis-number", type=int, default=10)
 
     args = parser.parse_args()
     return args
@@ -91,5 +91,5 @@ if __name__ == "__main__":
         training_images_folder=IMG_TRAIN,
         class_names=args.classes,
         output_folder=args.output_folder,
-        vis_stride=args.vis_stride,
+        vis_number=args.vis_number,
     )

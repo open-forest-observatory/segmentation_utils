@@ -1,4 +1,6 @@
 from pathlib import Path
+import shutil
+import os
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -144,12 +146,16 @@ def visualize(
     output_dir,
     cmap_name="tab10",
     alpha=0.5,
-    stride=1,
+    vis_number=10,
     image_extension="",
     label_extension="",
     ignore_substr_images_for_matching="",
     ignore_substr_labels_for_matching="",
+    remove_dir: bool = True,
 ):
+    if remove_dir and os.path.isdir(output_dir):
+        shutil.rmtree(output_dir)
+
     ensure_dir_normal_bits(output_dir)
     image_files, seg_files = get_matching_files(
         images_folder=image_dir,
@@ -159,6 +165,8 @@ def visualize(
         ignore_substr_images=ignore_substr_images_for_matching,
         ignore_substr_labels=ignore_substr_labels_for_matching,
     )
+
+    stride = int(len(seg_file) / vis_number)
 
     for seg_file, image_file in tqdm(
         list(zip(seg_files, image_files))[::stride],
