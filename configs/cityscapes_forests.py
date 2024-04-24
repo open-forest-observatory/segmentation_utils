@@ -56,7 +56,7 @@ model = dict(
 )
 dataset_type = "CityscapesForestsDataset"
 data_root = INSERT_DATA_ROOT
-img_suffix=IMG_SUFFIX
+img_suffix = IMG_SUFFIX
 classes = INSERT_CLASSES
 crop_size = (1024, 1024)
 train_pipeline = [
@@ -206,7 +206,7 @@ default_hooks = dict(
     timer=dict(type="IterTimerHook"),
     logger=dict(type="LoggerHook", interval=50, log_metric_by_epoch=False),
     param_scheduler=dict(type="ParamSchedulerHook"),
-    checkpoint=dict(type="CheckpointHook", by_epoch=False, interval=1000),
+    checkpoint=dict(type="CheckpointHook", by_epoch=False, interval=5000),
     sampler_seed=dict(type="DistSamplerSeedHook"),
     visualization=dict(type="SegVisualizationHook"),
 )
