@@ -48,8 +48,9 @@ def process_dataset_images(
         )
 
     vis_train = Path(output_folder, "vis", "train")
-    vis_val = Path(output_folder, "vis", "val")
     vis_train.mkdir(exist_ok=True, parents=True)
+
+    cmap_name = "tab10" if len(class_names) <= 10 else "tab20"
 
     show_colormaps(
         cmap_name=cmap_name,
@@ -58,9 +59,7 @@ def process_dataset_images(
     )
 
     img_train_folder = Path(output_folder, IMG_DIR, TRAIN_DIR)
-    img_val_folder = Path(output_folder, IMG_DIR, VAL_DIR)
     ann_train_folder = Path(output_folder, ANN_DIR, TRAIN_DIR)
-    ann_val_folder = Path(output_folder, ANN_DIR, VAL_DIR)
 
     visualize(
         ann_train_folder,
@@ -69,12 +68,5 @@ def process_dataset_images(
         ignore_substr_images_for_matching=RGB_EXT,
         ignore_substr_labels_for_matching=SEG_EXT,
         vis_number=vis_number,
-    )
-    visualize(
-        ann_val_folder,
-        img_val_folder,
-        vis_val,
-        ignore_substr_images_for_matching=RGB_EXT,
-        ignore_substr_labels_for_matching=SEG_EXT,
-        vis_number=vis_number,
+        cmap_name=cmap_name,
     )

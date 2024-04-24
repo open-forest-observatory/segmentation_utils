@@ -166,7 +166,7 @@ def visualize(
         ignore_substr_labels=ignore_substr_labels_for_matching,
     )
 
-    stride = int(len(seg_files) / vis_number)
+    stride = int(max(1, len(seg_files) / vis_number))
 
     for seg_file, image_file in tqdm(
         list(zip(seg_files, image_files))[::stride],
