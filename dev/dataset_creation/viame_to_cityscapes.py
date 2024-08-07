@@ -28,13 +28,27 @@ def parse_args():
     parser.add_argument("--train-frac", type=float, default=0.8)
     parser.add_argument("--image-extension", default="jpg")
     parser.add_argument("--write-unannotated", action="store_true")
-    parser.add_argument("--vis", action="store_true")
-    parser.add_argument("--write-config", action="store_true")
     args = parser.parse_args()
     return args
 
 
-def create_label_image(image_path, annotation_df, class_map, ignore_index=IGNORE_INDEX):
+def create_label_image(
+    image_path: Path,
+    annotation_df: pd.DataFrame,
+    class_map: dict,
+    ignore_index: int = IGNORE_INDEX,
+) -> np.ndarray:
+    """_summary_
+
+    Args:
+        image_path (Path): Full path to the image to generate label for
+        annotation_df (pd.DataFrame): The dataframe with all annotations
+        class_map (dict): Mapping from string class name to integer ID
+        ignore_index (int, optional): This is the value for unlabeled pixels. Defaults to IGNORE_INDEX.
+
+    Returns:
+        np.ndarray: Labeled array (h, w) with integer labels
+    """
     # Get the filename from the full path
     image_name = image_path.parts[-1]
     # Get the rows from the annotation dataframe matching this file
@@ -90,36 +104,39 @@ def main(
     image_extension="jpg",
     seed=0,
     ignore_index=IGNORE_INDEX,
-    vis=False,
-    write_config=False,
+    class_map=None,
 ):
+    # Make output directory
     output_train_img_dir = Path(output_folder, "img_dir", "train")
-
     os.makedirs(output_folder, exist_ok=True)
-    meta_file = Path(Path(annotation_file).parent, "meta.json")
+    # Copy the annotation file to the output folder
+    shutil.copyfile(annotation_file, Path(output_folder, Path(annotation_file).name))
 
-    with open(meta_file, "r") as infile:
-        metadata = json.load(infile)
-
-    class_map = {x: i for i, x in enumerate(metadata["customTypeStyling"].keys())}
-    class_map["unknown"] = ignore_index
-    class_names = list(class_map.keys())
-    class_names.pop(class_names.index("unknown"))
-
-    image_paths = list(Path(image_folder).glob("*." + image_extension))
+    # Read in the annotations
     annotation_df = pd.read_csv(annotation_file, sep=",", names=COLUMN_NAMES)
 
-    num_total = len(image_paths)
-    num_train = int(train_frac * num_total)
-    is_train_array = get_is_train_array(num_total, num_train, seed=seed)
+    # TODO allow the class map to be passed in, either directly or as a path to a json
+    if class_map is None:
+        meta_file = Path(Path(annotation_file).parent, "meta.json")
 
-    shutil.copyfile(annotation_file, Path(output_folder, Path(annotation_file).name))
+        with open(meta_file, "r") as infile:
+            metadata = json.load(infile)
+
+        class_map = {x: i for i, x in enumerate(metadata["customTypeStyling"].keys())}
+        class_map["unknown"] = ignore_index
+        class_names = list(class_map.keys())
+        class_names.pop(class_names.index("unknown"))
+
+    # List all of the images in the folder
+    image_paths = list(Path(image_folder).glob("*." + image_extension))
+    # Mark which images are for training vs validation
+    num_images = len(image_paths)
+    is_train_array = get_is_train_array(
+        num_total=num_images, num_train=int(train_frac * num_images), seed=seed
+    )
+
     valid_index = 0
-    for i, image_path in enumerate(tqdm(image_paths, desc="Converting data")):
-        # Determine whether to use for training
-        # TODO this should be computed using the number of valid ones, not pre-computed
-        is_train = is_train_array[i]
-
+    for is_train, image_path in tqdm(zip(is_train_array,image_paths), desc="Converting data")):
         # Read the data and create label image
         label_img = create_label_image(
             image_path,
@@ -127,9 +144,10 @@ def main(
             class_map=class_map,
             ignore_index=ignore_index,
         )
+        # If no pixels are annotated, skip
         if skip_unannotated and np.all(label_img == ignore_index):
             continue
-
+        # Link the image into the output structure
         link_cityscapes_file(
             image_path,
             output_folder,
@@ -138,6 +156,7 @@ def main(
             is_train=is_train,
             exist_ok=True,
         )
+        # Write the label in the cityscapes format
         write_cityscapes_file(
             label_img, output_folder, valid_index, is_ann=True, is_train=is_train
         )
@@ -145,6 +164,7 @@ def main(
         # Increament number of valid images
         valid_index += 1
 
+    # Compute the summary statistics
     process_dataset_images(
         training_images_folder=output_train_img_dir,
         class_names=class_names,
