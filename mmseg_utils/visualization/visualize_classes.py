@@ -1,6 +1,6 @@
-from pathlib import Path
-import shutil
 import os
+import shutil
+from pathlib import Path
 
 import matplotlib
 import matplotlib.pyplot as plt

@@ -2,6 +2,7 @@
 Show the segmentation labels from TartanAir to see if they have 
 Any semantic meaning
 """
+
 import argparse
 from pathlib import Path
 

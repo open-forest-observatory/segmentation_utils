@@ -2,9 +2,9 @@ import argparse
 import enum
 import itertools
 import os
-from pathlib import Path
 import shutil
 import typing
+from pathlib import Path
 
 from mmseg_utils.config import ANN_DIR, IMG_DIR, TRAIN_DIR, VAL_DIR
 from mmseg_utils.dataset_creation.dataset_utils import process_dataset_images

@@ -1,7 +1,8 @@
+from pathlib import Path
+
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
-from pathlib import Path
 
 RGB_EXT = "_rgb"
 SEG_EXT = "_segmentation"

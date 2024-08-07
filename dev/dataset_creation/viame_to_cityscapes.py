@@ -136,7 +136,9 @@ def main(
     )
 
     valid_index = 0
-    for is_train, image_path in tqdm(zip(is_train_array,image_paths), desc="Converting data")):
+    for is_train, image_path in tqdm(
+        zip(is_train_array, image_paths), desc="Converting data"
+    ):
         # Read the data and create label image
         label_img = create_label_image(
             image_path,

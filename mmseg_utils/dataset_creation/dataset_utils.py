@@ -2,12 +2,12 @@ from pathlib import Path
 
 from mmseg_utils.config import (
     ANN_DIR,
+    DEFAULT_CITYSCAPES_CONFIG,
     IMG_DIR,
     RGB_EXT,
     SEG_EXT,
     TRAIN_DIR,
     VAL_DIR,
-    DEFAULT_CITYSCAPES_CONFIG,
 )
 from mmseg_utils.dataset_creation.mmseg_config import create_new_config
 from mmseg_utils.dataset_creation.summary_statistics import compute_summary_statistics
