@@ -15,6 +15,14 @@ import typing
 from mmseg_utils.config import COLUMN_NAMES, IGNORE_INDEX
 
 
+def check_if_image(file):
+    try:
+        imread(file)
+        return True
+    except (ValueError, FileNotFoundError):
+        return False
+
+
 def parse_viame_annotation(
     image_path: Path,
     annotation_df: pd.DataFrame,
@@ -82,7 +90,6 @@ def parse_viame_annotations_dataset(
     image_folder: Path,
     annotation_file: Path,
     output_folder: Path,
-    image_extension: str = "jpg",
     class_map: typing.Union[Path, None] = None,
     ignore_index: int = IGNORE_INDEX,
 ):
@@ -112,7 +119,9 @@ def parse_viame_annotations_dataset(
         raise ValueError("Not a valid class map")
 
     # List all of the images in the folder
-    image_paths = list(Path(image_folder).glob("*." + image_extension))
+    all_paths = list(Path(image_folder).glob("*"))
+    # See if the file is a valid image
+    image_paths = [f for f in all_paths if check_if_image(f)]
 
     # Iterate over images
     for image_path in tqdm((image_paths), desc="Converting data"):
