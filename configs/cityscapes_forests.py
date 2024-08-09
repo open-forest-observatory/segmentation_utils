@@ -54,7 +54,7 @@ model = dict(
     train_cfg=dict(),
     test_cfg=dict(mode="slide", crop_size=(1024, 1024), stride=(768, 768)),
 )
-dataset_type = "CityscapesForestsDataset"
+dataset_type = "CityscapesArbitraryClassesDataset"
 data_root = INSERT_DATA_ROOT
 img_suffix = IMG_SUFFIX
 classes = INSERT_CLASSES
@@ -105,7 +105,7 @@ train_dataloader = dict(
     persistent_workers=True,
     sampler=dict(type="InfiniteSampler", shuffle=True),
     dataset=dict(
-        type="CityscapesForestsDataset",
+        type="CityscapesArbitraryClassesDataset",
         data_root=INSERT_DATA_ROOT,
         img_suffix=IMG_SUFFIX,
         classes=INSERT_CLASSES,
@@ -132,7 +132,7 @@ val_dataloader = dict(
     persistent_workers=True,
     sampler=dict(type="DefaultSampler", shuffle=False),
     dataset=dict(
-        type="CityscapesForestsDataset",
+        type="CityscapesArbitraryClassesDataset",
         data_root=INSERT_DATA_ROOT,
         img_suffix=IMG_SUFFIX,
         classes=INSERT_CLASSES,
@@ -151,7 +151,7 @@ test_dataloader = dict(
     persistent_workers=True,
     sampler=dict(type="DefaultSampler", shuffle=False),
     dataset=dict(
-        type="CityscapesForestsDataset",
+        type="CityscapesArbitraryClassesDataset",
         data_root=INSERT_DATA_ROOT,
         img_suffix=IMG_SUFFIX,
         classes=INSERT_CLASSES,
