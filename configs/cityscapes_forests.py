@@ -172,10 +172,10 @@ env_cfg = dict(
     mp_cfg=dict(mp_start_method="fork", opencv_num_threads=0),
     dist_cfg=dict(backend="nccl"),
 )
-vis_backends = [dict(type="LocalVisBackend")]
+vis_backends = [dict(type="LocalVisBackend"), dict(type='TensorboardVisBackend')]
 visualizer = dict(
     type="SegLocalVisualizer",
-    vis_backends=[dict(type="LocalVisBackend")],
+    vis_backends=vis_backends,
     name="visualizer",
 )
 log_processor = dict(by_epoch=False)
@@ -208,6 +208,6 @@ default_hooks = dict(
     param_scheduler=dict(type="ParamSchedulerHook"),
     checkpoint=dict(type="CheckpointHook", by_epoch=False, interval=5000),
     sampler_seed=dict(type="DistSamplerSeedHook"),
-    visualization=dict(type="SegVisualizationHook"),
+    visualization=dict(type="SegVisualizationHook", draw=True, interval=1),
 )
 checkpoint = "https://download.openmmlab.com/mmsegmentation/v0.5/pretrain/segformer/mit_b5_20220624-658746d9.pth"
