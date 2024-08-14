@@ -21,7 +21,6 @@ def process_dataset_images(
     num_summary_files=20,
     summary_subsample=100,
     vis_number=10,
-    cmap_name="tab10",
 ):
     mean, std = compute_summary_statistics(
         images=training_images_folder,

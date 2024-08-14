@@ -92,6 +92,7 @@ def parse_viame_annotations_dataset(
     output_folder: Path,
     class_map: typing.Union[Path, None] = None,
     ignore_index: int = IGNORE_INDEX,
+    label_suffix: str = ".png",
 ):
     # Make output directory
     os.makedirs(output_folder, exist_ok=True)
@@ -134,5 +135,6 @@ def parse_viame_annotations_dataset(
         )
         # The output file is the input filename in the output folder
         output_file = Path(output_folder, image_path.name)
+        output_file = output_file.with_suffix(label_suffix)
         # Write the output file
         imwrite(output_file, label_img)
