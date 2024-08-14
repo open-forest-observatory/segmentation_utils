@@ -117,7 +117,7 @@ def show_colormaps(cmap_name, class_names, savepath=None):
             np.repeat(color, repeats=100, axis=0), repeats=100, axis=1
         )
         axs[i, j].imshow(vis_square)
-        axs[i, j].set_title(class_names[index])
+        axs[i, j].set_title(class_names[index], fontsize=8)
         axs[i, j].axis("off")
     # Clear remaining subplots
     for index in range(num_classes, n_squares * n_squares):
