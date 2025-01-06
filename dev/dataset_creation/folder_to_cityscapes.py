@@ -1,4 +1,5 @@
 import argparse
+from mmseg_utils.dataset_creation.folder_to_cityscapes import folder_to_cityscapes
 
 
 def parse_args():
@@ -20,4 +21,16 @@ def parse_args():
 
 if __name__ == "__main__":
     args = parse_args()
-    # Find the files that match between the two folder trees, modulo image extensions
+
+    folder_to_cityscapes(
+        args.images_folder,
+        args.labels_folder,
+        args.image_ext,
+        args.label_ext,
+        args.train_frac,
+        args.val_frac,
+        args.output_folder,
+        args.remove_old,
+        args.classes,
+        args.vis_number,
+    )
