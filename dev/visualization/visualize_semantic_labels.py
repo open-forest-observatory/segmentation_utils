@@ -17,7 +17,7 @@ def parse_args():
     parser.add_argument("--seg-dir", type=Path, required=True)
     parser.add_argument("--palette", default="tab10", type=str)
     parser.add_argument(
-        "--stride", default=1, type=int, help="Evaluate images every <stride>th image"
+        "--vis-number", default=10, type=int, help="Number of images you want to visualize"
     )
 
     parser.add_argument(
@@ -38,5 +38,5 @@ if __name__ == "__main__":
         args.output_dir,
         args.palette,
         args.alpha,
-        args.stride,
+        args.vis_number,
     )
