@@ -26,6 +26,8 @@ def parse_args():
         default=0.5,
         help="Contribution of first image to blended one",
     )
+    parser.add_argument("--ignore-substr-images-for-matching", default="", type=str)
+    parser.add_argument("--ignore-substr-labels-for-matching", default="", type=str)
     args = parser.parse_args()
     return args
 
@@ -39,4 +41,6 @@ if __name__ == "__main__":
         args.palette,
         args.alpha,
         args.vis_number,
+        ignore_substr_images_for_matching=args.ignore_substr_images_for_matching,
+        ignore_substr_labels_for_matching=args.ignore_substr_labels_for_matching
     )
