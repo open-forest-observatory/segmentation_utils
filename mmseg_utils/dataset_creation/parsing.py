@@ -6,9 +6,9 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from imageio import imwrite
+from imageio import imwrite, imread
+from PIL import Image, ExifTags
 from skimage.draw import polygon2mask
-from skimage.io import imread
 from tqdm import tqdm
 import typing
 
@@ -28,6 +28,7 @@ def parse_viame_annotation(
     annotation_df: pd.DataFrame,
     class_map: dict,
     ignore_index: int = IGNORE_INDEX,
+    image_extension=None,
 ) -> np.ndarray:
     """_summary_
 
@@ -44,9 +45,13 @@ def parse_viame_annotation(
     image_name = image_path.parts[-1]
     # Get the rows from the annotation dataframe matching this file
     matching_rows = annotation_df.loc[annotation_df["image_name"] == image_name]
-    # Read in the image, but just to get the shape
-    # TODO see if this could be accelerated by reading exif, probably not worth it though
-    img_shape = imread(image_path).shape[:2]
+    # Open the original image to get the size and orientation. This should be a lazy operation that
+    # does not actually read the image contents.
+    img = Image.open(image_path)
+    # Get the image shape in (h, w) format
+    img_shape = img.size[::-1]
+    # 274 is the numeric value for the "Orientation" exif field.
+    orientation_flag = img.getexif()[274]
 
     label_mask_dict = defaultdict(lambda: np.zeros(img_shape, dtype=bool))
 
@@ -83,6 +88,24 @@ def parse_viame_annotation(
             pass
         label_img[mask] = label_ID
 
+    # https://docs.dataloop.ai/docs/exif-orientation-value
+    if orientation_flag == 1:
+        # No-op, the image is already right side up
+        pass
+    elif orientation_flag == 3:
+        # 180 degrees
+        label_img = np.flip(label_img, (0, 1))
+    elif orientation_flag == 6:
+        # 90 degrees
+        label_img = np.flip(np.transpose(label_img, (1, 0)), 0)
+    elif orientation_flag == 8:
+        # 270 degrees
+        label_img = np.flip(np.transpose(label_img, (1, 0)), 1)
+    else:
+        raise ValueError(
+            "Flipped images are not implemented because they likely suggest an issue"
+        )
+
     return label_img
 
 
@@ -93,6 +116,7 @@ def parse_viame_annotations_dataset(
     class_map: typing.Union[Path, None] = None,
     ignore_index: int = IGNORE_INDEX,
     label_suffix: str = ".png",
+    image_extension=None,
 ):
     # Make output directory
     os.makedirs(output_folder, exist_ok=True)
