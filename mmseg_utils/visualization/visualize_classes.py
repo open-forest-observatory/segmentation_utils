@@ -2,11 +2,10 @@ import os
 import shutil
 from pathlib import Path
 
-import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
-from imageio import imread, imwrite
 from tqdm import tqdm
+from PIL import Image
 
 from mmseg_utils.config import PALETTE_MAP
 from mmseg_utils.dataset_creation.file_utils import ensure_dir_normal_bits
@@ -137,7 +136,7 @@ def load_png_npy(filename):
     if filename.suffix == ".npy":
         return np.load(filename)
     elif filename.suffix in (".png", ".jpg", ".jpeg", ".JPG"):
-        return imread(filename)
+        return np.array(Image.open(filename))
 
 
 def visualize(
@@ -174,7 +173,7 @@ def visualize(
         desc=f"visualizing to {output_dir}",
     ):
         seg = load_png_npy(seg_file)
-        img = imread(image_file)
+        img = np.array(Image.open(image_file))
 
         vis_seg = visualize_with_cmap(seg, cmap_name)
         blended = blend_images_gray(img, vis_seg, alpha)
@@ -182,7 +181,7 @@ def visualize(
         concat = np.concatenate((vis_seg, img, blended), axis=1)
         savepath = Path(output_dir, Path(image_file).relative_to(image_dir))
         savepath.parent.mkdir(parents=True, exist_ok=True)
-        imwrite(str(savepath), concat)
+        Image.fromarray(concat).save(str(savepath))
 
 
 def blend_images_gray(im1, im2, alpha=0.7):

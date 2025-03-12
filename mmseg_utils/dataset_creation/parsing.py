@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from imageio import imwrite, imread
-from PIL import Image, ExifTags
+from PIL import Image
 from skimage.draw import polygon2mask
 from tqdm import tqdm
 import typing
@@ -52,6 +52,10 @@ def parse_viame_annotation(
     img_shape = img.size[::-1]
     # 274 is the numeric value for the "Orientation" exif field.
     orientation_flag = img.getexif()[274]
+
+    # Create the output exif information that will be saved alongside the label image
+    output_exif = Image.Exif()
+    output_exif[274] = orientation_flag
 
     label_mask_dict = defaultdict(lambda: np.zeros(img_shape, dtype=bool))
 
@@ -106,7 +110,7 @@ def parse_viame_annotation(
             "Flipped images are not implemented because they likely suggest an issue"
         )
 
-    return label_img
+    return label_img, output_exif
 
 
 def parse_viame_annotations_dataset(
@@ -151,7 +155,7 @@ def parse_viame_annotations_dataset(
     # Iterate over images
     for image_path in tqdm((image_paths), desc="Converting data"):
         # Read the data and create label image
-        label_img = parse_viame_annotation(
+        label_img, output_exif = parse_viame_annotation(
             image_path,
             annotation_df,
             class_map=class_map,
@@ -160,5 +164,6 @@ def parse_viame_annotations_dataset(
         # The output file is the input filename in the output folder
         output_file = Path(output_folder, image_path.name)
         output_file = output_file.with_suffix(label_suffix)
-        # Write the output file
-        imwrite(output_file, label_img)
+
+        label_img_PIL = Image.fromarray(label_img)
+        label_img_PIL.save(output_file, exif=output_exif)
