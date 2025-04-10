@@ -22,6 +22,8 @@ def folder_to_cityscapes(
     remove_old,
     classes,
     vis_number,
+    default_image_suffix=".JPG",
+    default_label_suffix=".png",
 ):
     # TODO make this work with multiple file extensions, e.g. .jpg, .jpeg
     image_files, label_files = get_matching_files(
@@ -81,20 +83,24 @@ def folder_to_cityscapes(
         stem = image_files[i].relative_to(images_folder)
         stem = str(stem.with_suffix("")).replace(os.path.sep, "_")
 
-        train_image_destination = Path(
-            img_train,
-            f"{stem}{RGB_EXT}{image_files[i].suffix}",
+        image_suffix = (
+            default_image_suffix
+            if default_image_suffix is not None
+            else image_files[i].suffix
         )
-        val_image_destination = Path(img_val, f"{stem}{RGB_EXT}{image_files[i].suffix}")
-        train_ann_destination = Path(
-            ann_train,
-            f"{stem}{SEG_EXT}{label_files[i].suffix}",
-        )
-        val_ann_destination = Path(
-            ann_val,
-            f"{stem}{SEG_EXT}{label_files[i].suffix}",
+        label_suffix = (
+            default_label_suffix
+            if default_label_suffix is not None
+            else label_files[i].suffix
         )
 
+        train_image_destination = Path(img_train, f"{stem}{RGB_EXT}{image_suffix}")
+        val_image_destination = Path(img_val, f"{stem}{RGB_EXT}{image_suffix}")
+
+        train_ann_destination = Path(ann_train, f"{stem}{SEG_EXT}{label_suffix}")
+        val_ann_destination = Path(ann_val, f"{stem}{SEG_EXT}{label_suffix}")
+
+        # This is weird because an image may be part of 0, 1, or both sets
         if training_images[i]:
             os.symlink(
                 image_files[i],
