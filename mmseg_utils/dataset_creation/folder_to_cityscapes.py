@@ -27,8 +27,8 @@ def folder_to_cityscapes(
     image_files, label_files = get_matching_files(
         images_folder,
         labels_folder,
-        image_ext,
-        label_ext,
+        image_extensions=image_ext,
+        label_extensions=label_ext,
         ignore_substr_images=RGB_EXT,
         ignore_substr_labels=SEG_EXT,
     )

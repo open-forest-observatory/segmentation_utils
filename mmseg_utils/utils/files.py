@@ -1,4 +1,5 @@
 from pathlib import Path
+import itertools
 
 import numpy as np
 
@@ -7,16 +8,32 @@ def keep_only_files(list_of_files_and_dirs):
     return sorted(filter(lambda x: x.is_file(), list_of_files_and_dirs))
 
 
+def get_files_matching_extensions(folder, extensions):
+
+    image_files = sorted(
+        itertools.chain(
+            *[keep_only_files((Path(folder).rglob("*" + ex))) for ex in extensions]
+        )
+    )
+    return image_files
+
+
 def get_matching_files(
     images_folder,
     labels_folder,
-    image_extension,
-    label_extension,
+    image_extensions,
+    label_extensions,
     ignore_substr_images="",
     ignore_substr_labels="",
 ):
-    image_files = keep_only_files((Path(images_folder).rglob("*" + image_extension)))
-    label_files = keep_only_files((Path(labels_folder).rglob("*" + label_extension)))
+    # If there is only one extension provided as a string, turn it into a one-length list
+    if isinstance(image_extensions, str):
+        image_extensions = [image_extensions]
+    if isinstance(label_extensions, str):
+        label_extensions = [label_extensions]
+
+    image_files = get_files_matching_extensions(images_folder, image_extensions)
+    label_files = get_files_matching_extensions(labels_folder, label_extensions)
     image_stems = [
         str(x.relative_to(images_folder).with_suffix("")).replace(
             ignore_substr_images, ""

@@ -159,8 +159,8 @@ def visualize(
     image_files, seg_files = get_matching_files(
         images_folder=image_dir,
         labels_folder=seg_dir,
-        image_extension=image_extension,
-        label_extension=label_extension,
+        image_extensions=image_extension,
+        label_extensions=label_extension,
         ignore_substr_images=ignore_substr_images_for_matching,
         ignore_substr_labels=ignore_substr_labels_for_matching,
     )
