@@ -29,6 +29,7 @@ def parse_viame_annotation(
     class_map: dict,
     ignore_index: int = IGNORE_INDEX,
     image_extension=None,
+    encode_rotation_with_metadata=False,
 ) -> np.ndarray:
     """_summary_
 
@@ -52,10 +53,6 @@ def parse_viame_annotation(
     img_shape = img.size[::-1]
     # 274 is the numeric value for the "Orientation" exif field.
     orientation_flag = img.getexif()[274]
-
-    # Create the output exif information that will be saved alongside the label image
-    output_exif = Image.Exif()
-    output_exif[274] = orientation_flag
 
     label_mask_dict = defaultdict(lambda: np.zeros(img_shape, dtype=bool))
 
@@ -92,23 +89,32 @@ def parse_viame_annotation(
             pass
         label_img[mask] = label_ID
 
-    # https://docs.dataloop.ai/docs/exif-orientation-value
-    if orientation_flag == 1:
-        # No-op, the image is already right side up
-        pass
-    elif orientation_flag == 3:
-        # 180 degrees
-        label_img = np.flip(label_img, (0, 1))
-    elif orientation_flag == 6:
-        # 90 degrees
-        label_img = np.flip(np.transpose(label_img, (1, 0)), 0)
-    elif orientation_flag == 8:
-        # 270 degrees
-        label_img = np.flip(np.transpose(label_img, (1, 0)), 1)
+    if encode_rotation_with_metadata:
+        # The annotations are relative to the metadata-rotated version of the image. The following steps
+        # update the orientation of the label so it's consistent with the metadata-free interpretation
+        # of the image.
+        # https://docs.dataloop.ai/docs/exif-orientation-value
+        if orientation_flag == 1:
+            # No-op, the image is already right side up
+            pass
+        elif orientation_flag == 3:
+            # 180 degrees
+            label_img = np.flip(label_img, (0, 1))
+        elif orientation_flag == 6:
+            # 90 degrees
+            label_img = np.flip(np.transpose(label_img, (1, 0)), 0)
+        elif orientation_flag == 8:
+            # 270 degrees
+            label_img = np.flip(np.transpose(label_img, (1, 0)), 1)
+        else:
+            raise ValueError(
+                "Flipped images are not implemented because they likely suggest an issue"
+            )
+        # Create the output exif information that will be saved alongside the label image
+        output_exif = Image.Exif()
+        output_exif[274] = orientation_flag
     else:
-        raise ValueError(
-            "Flipped images are not implemented because they likely suggest an issue"
-        )
+        output_exif = None
 
     return label_img, output_exif
 
@@ -121,6 +127,7 @@ def parse_viame_annotations_dataset(
     ignore_index: int = IGNORE_INDEX,
     label_suffix: str = ".png",
     image_extension=None,
+    encode_rotation_with_metadata=False,
 ):
     # Make output directory
     os.makedirs(output_folder, exist_ok=True)

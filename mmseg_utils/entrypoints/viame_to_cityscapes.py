@@ -11,6 +11,11 @@ def parse_args():
     parser.add_argument("--output-folder", required=True)
     parser.add_argument("--image-extension", default="jpg")
     parser.add_argument("--class-map")
+    parser.add_argument(
+        "--encode-rotation-with-metadata",
+        action="store_true",
+        help="Should the rotation of the label be encoded in the image metadata rather than by rotating the pixels",
+    )
     args = parser.parse_args()
     return args
 
