@@ -1,7 +1,7 @@
 import numpy as np
 
-from mmseg_utils.config import CLASS_NAMES, PALETTE_MAP
-from mmseg_utils.visualization.visualize_classes import show_frequency_hist
+from segmentation_utils.config import CLASS_NAMES, PALETTE_MAP
+from segmentation_utils.visualization.visualize_classes import show_frequency_hist
 
 dataset = "safeforest23"
 class_names = CLASS_NAMES[dataset]

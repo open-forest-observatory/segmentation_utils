@@ -1,4 +1,4 @@
-from mmseg_utils import __version__
+from segmentation_utils import __version__
 
 
 def test_version():

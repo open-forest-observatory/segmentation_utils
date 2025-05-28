@@ -1,6 +1,8 @@
 import argparse
 
-from mmseg_utils.dataset_creation.summary_statistics import compute_summary_statistics
+from segmentation_utils.dataset_creation.summary_statistics import (
+    compute_summary_statistics,
+)
 
 
 def parse_args():

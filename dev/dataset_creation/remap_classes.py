@@ -4,7 +4,7 @@ from pathlib import Path
 
 import numpy as np
 
-from mmseg_utils.dataset_creation.class_utils import remap_folder
+from segmentation_utils.dataset_creation.class_utils import remap_folder
 
 
 def parse_args():

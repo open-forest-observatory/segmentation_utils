@@ -1,13 +1,13 @@
 """
-Show the segmentation labels from TartanAir to see if they have 
+Show the segmentation labels from TartanAir to see if they have
 Any semantic meaning
 """
 
 import argparse
 from pathlib import Path
 
-from mmseg_utils.config import PALETTE_MAP
-from mmseg_utils.visualization.visualize_classes import visualize
+from segmentation_utils.config import PALETTE_MAP
+from segmentation_utils.visualization.visualize_classes import visualize
 
 
 def parse_args():
@@ -17,7 +17,10 @@ def parse_args():
     parser.add_argument("--seg-dir", type=Path, required=True)
     parser.add_argument("--palette", default="tab10", type=str)
     parser.add_argument(
-        "--vis-number", default=10, type=int, help="Number of images you want to visualize"
+        "--vis-number",
+        default=10,
+        type=int,
+        help="Number of images you want to visualize",
     )
 
     parser.add_argument(
@@ -42,5 +45,5 @@ if __name__ == "__main__":
         args.alpha,
         args.vis_number,
         ignore_substr_images_for_matching=args.ignore_substr_images_for_matching,
-        ignore_substr_labels_for_matching=args.ignore_substr_labels_for_matching
+        ignore_substr_labels_for_matching=args.ignore_substr_labels_for_matching,
     )

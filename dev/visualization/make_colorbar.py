@@ -1,7 +1,7 @@
 import numpy as np
 
-from mmseg_utils.config import CLASS_NAMES, PALETTE_MAP
-from mmseg_utils.visualization.visualize_classes import show_colormaps_flat
+from segmentation_utils.config import CLASS_NAMES, PALETTE_MAP
+from segmentation_utils.visualization.visualize_classes import show_colormaps_flat
 
 # weights = np.array(
 #    [

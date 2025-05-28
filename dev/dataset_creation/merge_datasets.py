@@ -6,8 +6,8 @@ import shutil
 import typing
 from pathlib import Path
 
-from mmseg_utils.config import ANN_DIR, IMG_DIR, TRAIN_DIR, VAL_DIR
-from mmseg_utils.dataset_creation.dataset_utils import process_dataset_images
+from segmentation_utils.config import ANN_DIR, IMG_DIR, TRAIN_DIR, VAL_DIR
+from segmentation_utils.dataset_creation.dataset_utils import process_dataset_images
 
 
 def parse_args():

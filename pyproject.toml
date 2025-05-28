@@ -1,8 +1,11 @@
 [tool.poetry]
-name = "mmseg_utils"
+name = "segmentation_utils"
 version = "0.1.0"
 description = ""
-authors = ["David Russell <davidrussell327@gmail.com>"]
+authors = [
+    "David Russell <davidrussell327@gmail.com>",
+    "Ciro Gonzalez"
+]
 
 [tool.poetry.dependencies]
 python = "^3.9"
