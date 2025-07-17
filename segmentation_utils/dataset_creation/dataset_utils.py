@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from mmseg_utils.config import (
+from segmentation_utils.config import (
     ANN_DIR,
     DEFAULT_CITYSCAPES_CONFIG,
     IMG_DIR,
@@ -9,9 +9,9 @@ from mmseg_utils.config import (
     TRAIN_DIR,
     VAL_DIR,
 )
-from mmseg_utils.dataset_creation.mmseg_config import create_new_config
-from mmseg_utils.dataset_creation.summary_statistics import compute_summary_statistics
-from mmseg_utils.visualization.visualize_classes import show_colormaps, visualize
+from segmentation_utils.dataset_creation.mmseg_config import create_new_config
+from segmentation_utils.dataset_creation.summary_statistics import compute_summary_statistics
+from segmentation_utils.visualization.visualize_classes import show_colormaps, visualize
 
 
 def process_dataset_images(

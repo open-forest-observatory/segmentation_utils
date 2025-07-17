@@ -7,9 +7,9 @@ import numpy as np
 from tqdm import tqdm
 from PIL import Image
 
-from mmseg_utils.config import PALETTE_MAP
-from mmseg_utils.dataset_creation.file_utils import ensure_dir_normal_bits
-from mmseg_utils.utils.files import get_matching_files
+from segmentation_utils.config import PALETTE_MAP
+from segmentation_utils.dataset_creation.file_utils import ensure_dir_normal_bits
+from segmentation_utils.utils.files import get_matching_files
 
 
 def visualize_with_cmap(index_image, cmap_name, ignore_ind=255):

@@ -12,7 +12,7 @@ from skimage.draw import polygon2mask
 from tqdm import tqdm
 import typing
 
-from mmseg_utils.config import COLUMN_NAMES, IGNORE_INDEX
+from segmentation_utils.config import COLUMN_NAMES, IGNORE_INDEX
 
 
 def check_if_image(file):
