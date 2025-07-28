@@ -1,6 +1,6 @@
 import argparse
 
-from mmseg_utils.visualization.visualize_classes import show_colormaps
+from segmentation_utils.visualization.visualize_classes import show_colormaps
 
 def parse_args():
     parser = argparse.ArgumentParser()

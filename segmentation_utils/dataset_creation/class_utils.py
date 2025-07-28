@@ -6,7 +6,7 @@ from imageio import imwrite
 from skimage.transform import resize
 from tqdm import tqdm
 
-from mmseg_utils.dataset_creation.file_utils import read_npy_or_img
+from segmentation_utils.dataset_creation.file_utils import read_npy_or_img
 
 
 def remap_folder(

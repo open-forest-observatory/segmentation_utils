@@ -5,10 +5,10 @@ from pathlib import Path
 import numpy as np
 from tqdm import tqdm
 
-from mmseg_utils.config import ANN_DIR, IMG_DIR, RGB_EXT, SEG_EXT, TRAIN_DIR, VAL_DIR
-from mmseg_utils.dataset_creation.dataset_utils import process_dataset_images
-from mmseg_utils.utils.files import get_matching_files
-from mmseg_utils.visualization.visualize_classes import load_png_npy
+from segmentation_utils.config import ANN_DIR, IMG_DIR, RGB_EXT, SEG_EXT, TRAIN_DIR, VAL_DIR
+from segmentation_utils.dataset_creation.dataset_utils import process_dataset_images
+from segmentation_utils.utils.files import get_matching_files
+from segmentation_utils.visualization.visualize_classes import load_png_npy
 
 
 def folder_to_cityscapes(

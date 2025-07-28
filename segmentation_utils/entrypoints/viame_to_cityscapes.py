@@ -1,7 +1,6 @@
 from argparse import ArgumentParser
 
-from mmseg_utils.dataset_creation.parsing import parse_viame_annotations_dataset
-from mmseg_utils.dataset_creation.dataset_utils import process_dataset_images
+from segmentation_utils.dataset_creation.parsing import parse_viame_annotations_dataset
 
 
 def parse_args():

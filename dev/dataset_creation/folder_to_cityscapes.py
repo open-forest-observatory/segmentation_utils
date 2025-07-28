@@ -1,5 +1,5 @@
 import argparse
-from mmseg_utils.dataset_creation.folder_to_cityscapes import folder_to_cityscapes
+from segmentation_utils.dataset_creation.folder_to_cityscapes import folder_to_cityscapes
 
 
 def parse_args():

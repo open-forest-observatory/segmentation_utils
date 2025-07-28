@@ -5,8 +5,8 @@ import numpy as np
 from imageio import imread
 from ubelt import ensuredir, symlink
 
-from mmseg_utils.config import ANN_DIR, IMG_DIR, RGB_EXT, SEG_EXT, TRAIN_DIR, VAL_DIR
-from mmseg_utils.dataset_creation.img_utils import imwrite_skimage
+from segmentation_utils.config import ANN_DIR, IMG_DIR, RGB_EXT, SEG_EXT, TRAIN_DIR, VAL_DIR
+from segmentation_utils.dataset_creation.img_utils import imwrite_skimage
 
 
 def pad_filename(filename: Path, start_index=None, end_index=None, pad_length: int = 6):
