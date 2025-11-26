@@ -24,6 +24,8 @@ def folder_to_cityscapes(
     vis_number,
     default_image_suffix=".JPG",
     default_label_suffix=".png",
+    ignore_substr_images="",
+    ignore_substr_labels="",
 ):
     # TODO make this work with multiple file extensions, e.g. .jpg, .jpeg
     image_files, label_files = get_matching_files(
@@ -31,8 +33,8 @@ def folder_to_cityscapes(
         labels_folder,
         image_extensions=image_ext,
         label_extensions=label_ext,
-        ignore_substr_images=RGB_EXT,
-        ignore_substr_labels=SEG_EXT,
+        ignore_substr_images=ignore_substr_images,
+        ignore_substr_labels=ignore_substr_labels,
     )
 
     # Check for images with no rendered label
