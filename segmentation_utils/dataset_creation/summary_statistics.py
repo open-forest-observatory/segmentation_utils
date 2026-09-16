@@ -9,7 +9,7 @@ from tqdm import tqdm
 def compute_summary_statistics(
     images, num_files=50, savepath=None, subsample_step=100, extension=""
 ):
-    files = [x for x in Path(images).glob("*" + extension) if x.is_file()]
+    files = [x for x in Path(images).rglob("*" + extension) if x.is_file()]
     files = choice(files, min(num_files, len(files)))
 
     imgs = [imread(x) for x in tqdm(files)]
